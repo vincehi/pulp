@@ -1,0 +1,28 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "cargo prisma"
+  output   = "../src/prisma_main_client.rs"
+}
+
+model Directory {
+  path       String   @id
+  name       String
+  files      File[]
+  visibility Boolean
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model File {
+  path          String    @id
+  name          String
+  directory     Directory @relation(fields: [directoryPath], references: [path])
+  directoryPath String
+}

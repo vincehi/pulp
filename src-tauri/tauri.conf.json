@@ -1,7 +1,7 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/schema.json",
   "build": {
-    "beforeBuildCommand": "npm run build",
+    "beforeBuildCommand": "npm run prisma-generate-all && npm run build",
     "beforeDevCommand": "npm run dev",
     "devPath": "http://localhost:5173",
     "distDir": "../dist"
@@ -14,12 +14,27 @@
     "allowlist": {
       "all": true,
       "fs": {
-        "scope": ["$HOME/*"]
+        "all": true,
+        "scope": [
+          "**"
+        ]
+      },
+      "protocol": {
+        "all": true,
+        "asset": true,
+        "assetScope": [
+          "**"
+        ]
       },
       "dialog": {
         "all": true,
         "open": true,
         "save": true
+      },
+      "clipboard": {
+        "all": true,
+        "writeText": true,
+        "readText": true
       }
     },
     "bundle": {
@@ -46,7 +61,9 @@
         "providerShortName": null,
         "signingIdentity": null
       },
-      "resources": [],
+      "resources": [
+        "resources/*"
+      ],
       "shortDescription": "",
       "targets": "all",
       "windows": {
@@ -56,7 +73,7 @@
       }
     },
     "security": {
-      "csp": null
+      "csp": "default-src 'self' asset: https://asset.localhost; img-src 'self'; media-src 'self'"
     },
     "updater": {
       "active": false

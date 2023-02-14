@@ -11,8 +11,13 @@ node_modules
 dist
 dist-ssr
 *.local
-schema.prisma
-src-tauri/.env
+/schema.prisma
+/src-tauri/.env
+/src-tauri/src/prisma_main_client.rs
+/src-tauri/target/
+/src-tauri/prisma/client/
+/src-tauri/prisma/dev.db
+/src-tauri/prisma/dev.db-journal
 
 # Editor directories and files
 .vscode/*

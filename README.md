@@ -1,6 +1,11 @@
+<div align="center" style="text-align: center"><img src="https://raw.githubusercontent.com/bazalp/pulp/main/icons/icon-test.png" width="230" alt="2kama logo"/></div>
+
 # Pulp - Open Source Audio Sample Manager
 
-Pulp is an open source alternative to [ADSR Sample Manager](https://adsrsounds.com/sample-manager). This application allows you to scan a folder, retrieve audio files, automatically detect the audio key, and organize them effectively. In addition to being an audio sample management tool, Pulp is also an audio file explorer.
+Pulp is an open source alternative
+to [ADSR Sample Manager](https://www.adsrsounds.com/product/software/adsr-sample-manager/). This application allows you
+to scan a folder, retrieve audio files, automatically detect the audio key, and organize them effectively. In addition
+to being an audio sample management tool, Pulp is also an audio file explorer.
 
 ## Features
 
@@ -11,11 +16,13 @@ Pulp is an open source alternative to [ADSR Sample Manager](https://adsrsounds.c
 
 ## Technology
 
-Pulp was developed with [Tauri](https://tauri.studio/), [Prisma](https://www.prisma.io/) and SQLite for the back-end and [Solid-JS](https://github.com/ryansolid/solid) for the front-end.
+Pulp was developed with [Tauri](https://tauri.studio/), [Prisma](https://www.prisma.io/) and SQLite for the back-end
+and [Solid-JS](https://github.com/ryansolid/solid) for the front-end.
 
 ## Installation and Usage
 
-_CLI cargo commands must be typed in the `src-tauri` folder fortunately there is a npm command that allows us to type any cargo command from the root `npm run cargo -- <here>`_
+_CLI cargo commands must be typed in the `src-tauri` folder fortunately there is a npm command that allows us to type
+any cargo command from the root `npm run cargo -- <here>`_
 
 example :
 `npm run cargo -- prisma generate`
@@ -23,27 +30,39 @@ _for the CLI [prisma-client-rust](https://prisma.brendonovich.dev/getting-starte
 
 **Starter**
 
-- Rename `src-tauri/.env.dist` to `src-tauri/.env` and replace `<user>` in `DATABASE_URL` (works only on macOS, need to be adapted for others).
+- Rename `src-tauri/.env.dist` to `src-tauri/.env` and replace `<user>` in `DATABASE_URL` for macOS (For the other OS
+  repect `<app_data_dir>/databases/Database.db` and check
+  documentation [here](https://tauri.app/v1/api/js/path/#appdatadir)
+  and [there](https://docs.rs/tauri/1.2.4/tauri/struct.PathResolver.html#method.app_data_dir) and
+  adjust `<app_data_dir>`).
 - Install cargo packages : `npm run cargo -- install`
 - Install npm packages : `npm install`
-- Push in db fist migration : `npm run cargo -- migrate dev --name init`.
+- Push in db first migration : `npm run cargo -- prisma migrate dev --name init`.
 - Generate Prisma Rust Client : `npm run cargo -- prisma generate`.
-- Command helper for generate prisma client javascript with types : `npm run prisma-js -- generates`.
-- Start dev with : `npm run tauri dev` [Tauri Development Cycle](https://tauri.app/v1/guides/development/development-cycle)
+- Command helper for generate prisma client javascript with types : `npm run prisma-js -- generate`
+  and `npx prisma studio` if you want see the DB.
+- Start dev
+  with : `npm run tauri dev` [Tauri Development Cycle](https://tauri.app/v1/guides/development/development-cycle)
 
-_I created this command because unfortunately `prisma-client-rust` did not allow me to generate the javascript client. So this command is a helper to generate the prisma javascript client and take advantage of the types in the javascript code._
+_I created this command because unfortunately `prisma-client-rust` did not allow me to generate the javascript client.
+So this command is a helper to generate the prisma javascript client and take advantage of the types in the javascript
+code._
 
-The VS Code debugging is configured in the `.vscode` folder, you just have to download the [vscode-lldb](https://github.com/vadimcn/vscode-lldb) extension as shown [here](https://tauri.app/v1/guides/debugging/vs-code)
+The VS Code debugging is configured in the `.vscode` folder, you just have to download
+the [vscode-lldb](https://github.com/vadimcn/vscode-lldb) extension as
+shown [here](https://tauri.app/v1/guides/debugging/vs-code)
 
 The commands will evolve in the future to be more generic
 
 ## Contributing
 
-Pulp is an open source project and we welcome contributions. If you would like to contribute, please check our GitHub repository for more information on contribution processes.
+Pulp is an open source project and we welcome contributions. If you would like to contribute, please check our GitHub
+repository for more information on contribution processes.
 
 ## Acknowledgements
 
-We would like to thank all contributors for their support and help in developing Pulp. We couldn't have done it without you.
+We would like to thank all contributors for their support and help in developing Pulp. We couldn't have done it without
+you.
 
 ## More
 
@@ -59,4 +78,6 @@ We would like to thank all contributors for their support and help in developing
 - https://docs.rs/tauri/1.2.1/tauri/macro.generate_handler.html
 - https://www.prisma.io/docs/reference/api-reference/prisma-client-reference#create
 
-Multiple db : https://github.com/prisma/prisma/issues/2443
+## Machine learning
+
+- https://essentia.upf.edu/machine_learning.html and model https://essentia.upf.edu/models.html
