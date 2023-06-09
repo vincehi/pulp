@@ -46,12 +46,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-      - name: Show notes
-        run: echo "${{ needs.get-next-release.outputs.next-release-notes }}"
-      - name: Show gitTag
-        run: echo ${{ needs.get-next-release.outputs.next-release-git-tag }}
-      - name: Show version
-        run: echo ${{ needs.get-next-release.outputs.next-release-version }}
 
       - name: Rust setup
         uses: dtolnay/rust-toolchain@stable
