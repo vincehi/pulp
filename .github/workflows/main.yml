@@ -47,11 +47,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
       - name: Show notes
-        run: echo "${{ steps.get-next-release.outputs.next-release-notes }}"
+        run: echo "${{ needs.get-next-release.outputs.next-release-notes }}"
       - name: Show gitTag
-        run: echo ${{ steps.get-next-release.outputs.next-release-git-tag }}
+        run: echo ${{ needs.get-next-release.outputs.next-release-git-tag }}
       - name: Show version
-        run: echo ${{ steps.get-next-release.outputs.next-release-version }}
+        run: echo ${{ needs.get-next-release.outputs.next-release-version }}
 
       - name: Rust setup
         uses: dtolnay/rust-toolchain@stable
@@ -75,8 +75,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tagName: ${{ steps.get-next-release.outputs.next-release-git-tag }}
-          releaseName: ${{ steps.get-next-release.outputs.next-release-version }}
-          releaseBody: ${{ steps.get-next-release.outputs.next-release-notes }}
+          tagName: ${{ needs.get-next-release.outputs.next-release-git-tag }}
+          releaseName: ${{ needs.get-next-release.outputs.next-release-version }}
+          releaseBody: ${{ needs.get-next-release.outputs.next-release-notes }}
           releaseDraft: false
           prerelease: true
