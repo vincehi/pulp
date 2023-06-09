@@ -31,25 +31,39 @@ jobs:
     outputs:
       next-release-published: ${{ steps.get-next-release.outputs.next-release-published }}
       next-release: ${{ steps.get-next-release.outputs.next-release }}
+
   build:
+    runs-on: ubuntu-latest
     needs: get-next-release
-    if: needs.get-next-release.outputs.next-release-published == 'true'
-    permissions:
-      contents: write
-    strategy:
-      fail-fast: false
-      matrix:
-        platform: [ macos-latest ]
-    runs-on: ${{ matrix.platform }}
+    if: needs.get-next-version.outputs.new-release-published == 'true'
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-      - name: Show notes
-        run: echo "${{ steps.get-next-release.outputs.next-release }}"
-      - name: Show gitTag
-        run: echo ${{ steps.get-next-release.outputs.next-release.gitTag }}
-      - name: Show version
-        run: echo ${{ steps.get-next-release.outputs.next-release.version }}
+      - uses: actions/checkout@v3
+      - name: Outputs
+        run: echo "${{ needs.get-next-release.outputs }}"
+      - name: Next Release
+        run: echo "${{ needs.get-next-release.outputs.next-release }}"
+      - name: Next V
+        run: echo "${{ needs.get-next-release.outputs.next-release.version }}"
+
+#  build:
+#    needs: get-next-release
+#    if: needs.get-next-release.outputs.next-release-published == 'true'
+#    permissions:
+#      contents: write
+#    strategy:
+#      fail-fast: false
+#      matrix:
+#        platform: [ macos-latest ]
+#    runs-on: ${{ matrix.platform }}
+#    steps:
+#      - name: Checkout repository
+#        uses: actions/checkout@v3
+#      - name: Show notes
+#        run: echo "${{ steps.get-next-release.outputs.next-release }}"
+#      - name: Show gitTag
+#        run: echo ${{ steps.get-next-release.outputs.next-release.gitTag }}
+#      - name: Show version
+#        run: echo ${{ steps.get-next-release.outputs.next-release.version }}
 
 #      - name: Rust setup
 #        uses: dtolnay/rust-toolchain@stable
