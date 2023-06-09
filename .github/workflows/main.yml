@@ -2,7 +2,7 @@ name: 'ci'
 on:
   push:
     branches:
-      - wesh
+      - main
 
 permissions:
   contents: read # for checkout
@@ -71,4 +71,4 @@ jobs:
           releaseName: ${{ steps.get-next-release.outputs.next-release.version }}
           releaseBody: ${{ steps.get-next-release.outputs.next-release.notes }}
           releaseDraft: false
-          prerelease: false
+          prerelease: true
