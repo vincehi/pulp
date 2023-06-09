@@ -44,31 +44,37 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+      - name: Show notes
+        run: echo ${{ steps.get-next-release.outputs.next-release.notes }}
+      - name: Show gitTag
+        run: echo ${{ steps.get-next-release.outputs.next-release.gitTag }}
+      - name: Show version
+        run: echo ${{ steps.get-next-release.outputs.next-release.version }}
 
-      - name: Rust setup
-        uses: dtolnay/rust-toolchain@stable
-
-      - name: Rust cache
-        uses: swatinem/rust-cache@v2
-        with:
-          workspaces: './src-tauri -> target'
-
-      - name: Sync node version and setup cache
-        uses: actions/setup-node@v3
-        with:
-          cache: 'npm' # Set this to npm, yarn or pnpm.
-
-      - name: Install frontend dependencies
-        # If you don't have `beforeBuildCommand` configured you may want to build your frontend here too.
-        run: npm install # Change this to npm, yarn or pnpm.
-
-      - name: Build the app
-        uses: tauri-apps/tauri-action@v0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tagName: ${{ steps.get-next-release.outputs.next-release.gitTag }}
-          releaseName: ${{ steps.get-next-release.outputs.next-release.version }}
-          releaseBody: ${{ steps.get-next-release.outputs.next-release.notes }}
-          releaseDraft: false
-          prerelease: true
+#      - name: Rust setup
+#        uses: dtolnay/rust-toolchain@stable
+#
+#      - name: Rust cache
+#        uses: swatinem/rust-cache@v2
+#        with:
+#          workspaces: './src-tauri -> target'
+#
+#      - name: Sync node version and setup cache
+#        uses: actions/setup-node@v3
+#        with:
+#          cache: 'npm' # Set this to npm, yarn or pnpm.
+#
+#      - name: Install frontend dependencies
+#        # If you don't have `beforeBuildCommand` configured you may want to build your frontend here too.
+#        run: npm install # Change this to npm, yarn or pnpm.
+#
+#      - name: Build the app
+#        uses: tauri-apps/tauri-action@v0
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#        with:
+#          tagName: ${{ steps.get-next-release.outputs.next-release.gitTag }}
+#          releaseName: ${{ steps.get-next-release.outputs.next-release.version }}
+#          releaseBody: ${{ steps.get-next-release.outputs.next-release.notes }}
+#          releaseDraft: false
+#          prerelease: true
