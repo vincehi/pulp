@@ -45,7 +45,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
       - name: Show notes
-        run: echo ${{ steps.get-next-release.outputs.next-release }}
+        run: echo "${{ steps.get-next-release.outputs.next-release }}"
       - name: Show gitTag
         run: echo ${{ steps.get-next-release.outputs.next-release.gitTag }}
       - name: Show version
