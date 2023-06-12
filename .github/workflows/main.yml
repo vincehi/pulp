@@ -76,35 +76,4 @@ jobs:
           releaseName: ${{ needs.get-next-release.outputs.next-release-version }}
           releaseBody: ${{ needs.get-next-release.outputs.next-release-notes }}
           releaseDraft: false
-          prerelease: true
-
-      - name: Checkout code
-        uses: actions/checkout@v3
-      - name: Update updater
-        run: |
-          echo "${{ fromJSON(steps.tauri-action.outputs.artifactPaths)[0] }}"
-          echo "${{ fromJSON(steps.tauri-action.outputs.artifactPaths)[1] }}"
-          echo "${{ fromJSON(steps.tauri-action.outputs.artifactPaths)[3] }}"
-          echo "${{ steps.tauri-action.outputs.releaseUploadUrl }}"
-          echo "${{ steps.tauri-action.outputs.releaseHtmlUrl }}"
-          echo "${{ steps.tauri-action.outputs.releaseId }}"
-          sig=${cat "${{ fromJSON(steps.tauri-action.outputs.artifactPaths)[2] }}")
-          
-          json=$(cat ${GITHUB_WORKSPACE}/tools/pulp-updater.json)
-          
-          json_var_replaced=$(echo "$json" | sed \
-            -e "s/\${VERSION}/${{ needs.get-next-release.outputs.next-release-version }}/g" \
-            -e "s/\${DOWNLOAD_URL}/"https://google.com"/g" \
-            -e "s/\${SIGNATURE}/$sig/g" \
-            -e "s/\${NOTES}/${{ needs.get-next-release.outputs.next-release-notes }}/g")
-          
-          json_string=$(echo $json_var_replaced | sed 's/"/\\"/g')
-          
-          curl -X "PATCH" "https://api.github.com/gists/6639eb2bf829c4f8bd8c62e0ea4b6285" \
-                -H 'Accept: application/vnd.github+json' \
-                -H 'Authorization: Bearer ${{ secrets.GIST_TOKEN }}' \
-                -H 'X-Github-Api-Version: 2022-11-28' \
-                -H 'Content-Type: application/json; charset=utf-8' \
-                -d "{\"files\":{\"pulp-updater.json\":{\"content\":\"$json_string\"}}}"
-
-
+          prerelease: false
