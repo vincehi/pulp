@@ -95,7 +95,7 @@ jobs:
                 -d $'{
             "files": {
               "pulp-updater.json": {
-                "content": $json_string
+                "content": printf "%q\n" $json_string
               }
             }
           }'
