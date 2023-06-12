@@ -95,7 +95,7 @@ jobs:
                 -d $'{
             "files": {
               "pulp-updater.json": {
-                "content": $json | sed 's/"/\\"/g
+                "content": $json | sed 's/"/\\"/g'
               }
             }
           }'
