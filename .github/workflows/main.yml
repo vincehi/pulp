@@ -70,6 +70,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+          TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
         with:
           tagName: ${{ needs.get-next-release.outputs.next-release-git-tag }}
           releaseName: ${{ needs.get-next-release.outputs.next-release-version }}
