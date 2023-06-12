@@ -81,7 +81,7 @@ jobs:
         run: |
           json=$(cat ${GITHUB_WORKSPACE}/tools/pulp-updater.json)
           
-          json_var_replaced=$(echo "$json" | sed "s/\${VERSION}/${GITHUB_WORKSPACE}/g")
+          json_var_replaced=$(echo "$json" | sed "s/\${VERSION}/${GITHUB_WORKSPACE//\//\\/}/g")
           
           json_string=$(echo $json_var_replaced | sed 's/"/\\"/g')
           
