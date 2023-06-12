@@ -1,3 +1,10 @@
 {
-  "version-root": "${VERSION}"
+  "version": "${VERSION}",
+  "notes": "${NOTES}",
+  "platforms": {
+    "darwin-x86_64": {
+      "signature": "${SIGNATURE}",
+      "url": "${DOWNLOAD_URL}"
+    }
+  }
 }
