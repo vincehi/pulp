@@ -80,7 +80,7 @@ jobs:
         run: |
           curl -X "PATCH" "https://api.github.com/gists/6639eb2bf829c4f8bd8c62e0ea4b6285" \
           -H 'Accept: application/vnd.github+json' \
-          -H 'Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
+          -H 'Authorization: Bearer ${{ secrets.GIST_TOKEN }}' \
           -H 'X-Github-Api-Version: 2022-11-28' \
           -H 'Content-Type: application/json; charset=utf-8' \
           -d $'{
