@@ -78,7 +78,9 @@ jobs:
 
       - name: Updater update
         run: |
-          echo ${PWD}
+          content=$(cat ${GITHUB_WORKSPACE}/pulp-updater.json)
+          echo "$content"
+          
           json=$(cat ${PWD}/pulp-updater.json)
           
           
