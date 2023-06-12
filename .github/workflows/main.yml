@@ -79,11 +79,7 @@ jobs:
         uses: actions/checkout@v3
       - name: Updater update
         run: |
-          content=$(cat ${GITHUB_WORKSPACE}/pulp-updater.json)
-          echo "$content"
-          
-          json=$(cat ${PWD}/pulp-updater.json)
-          
+          json=$(cat ${GITHUB_WORKSPACE}/tools/pulp-updater.json)
           
           json=$(echo "$json" | sed "s/\${VERSION}/yes/g")
           
