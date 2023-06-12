@@ -77,7 +77,7 @@ jobs:
       #
       - name: Checkout code
         uses: actions/checkout@v3
-      - name: Updater update
+      - name: Update updater
         run: |
           json=$(cat ${GITHUB_WORKSPACE}/tools/pulp-updater.json)
           
@@ -91,7 +91,7 @@ jobs:
                 -d $'{
             "files": {
               "pulp-updater.json": {
-                "content": "'"$json"'"
+                "content": $json | jq -c
               }
             }
           }'
