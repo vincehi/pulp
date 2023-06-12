@@ -78,7 +78,7 @@ jobs:
 
       - name: Updater update
         run: |
-          echo ${{ env }}
+          echo "${{ env }}"
           json=$(cat pulp-updater.json)
           
           
