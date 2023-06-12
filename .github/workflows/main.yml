@@ -77,9 +77,9 @@ jobs:
       #
 
       - name: Updater update
-        working-directory: tools
         run: |
-          json=$(cat pulp-updater.json)
+          echo ${PWD}
+          json=$(cat ${PWD}/pulp-updater.json)
           
           
           json=$(echo "$json" | sed "s/\${VERSION}/yes/g")
