@@ -1,0 +1,10 @@
+{
+  "version": "${VERSION}",
+  "notes": "${NOTES}",
+  "platforms": {
+    "windows-x86_64": {
+      "signature": "${TARGET_SIGNATURE}",
+      "url": "${TARGET_URL}"
+    }
+  }
+}

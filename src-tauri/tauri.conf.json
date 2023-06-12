@@ -76,7 +76,12 @@
       "csp": "default-src 'self' asset: https://asset.localhost; img-src 'self'; media-src 'self'"
     },
     "updater": {
-      "active": false
+      "active": true,
+      "endpoints": [
+        "https://gist.githubusercontent.com/bazalp/6639eb2bf829c4f8bd8c62e0ea4b6285/raw/f3f7931a35d844b1a50c8a5776b88d34e67b59b6/pulp-updater.json"
+      ],
+      "dialog": true,
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDhENkFDRUZFNUNDRDMxNUMKUldSY01jMWMvczVxamFFUkZWUFdjV2tldGswblgrTXJlbmRnY21FOTQxclNzcVBIWU1pUUJ1blgK"
     },
     "windows": [
       {

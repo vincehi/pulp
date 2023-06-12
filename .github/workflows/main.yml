@@ -16,61 +16,89 @@ jobs:
       pull-requests: write # to be able to comment on released pull requests
       id-token: write # to enable use of OIDC for npm provenance
     steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-      - name: Install dependencies
-        run: npm install @actions/core
-      - name: Release
-        id: get-next-release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npx semantic-release --dry-run
-    outputs:
-      next-release-published: ${{ steps.get-next-release.outputs.next-release-published }}
-      next-release-version: ${{ steps.get-next-release.outputs.next-release-version }}
-      next-release-git-tag: ${{ steps.get-next-release.outputs.next-release-git-tag }}
-      next-release-notes: ${{ steps.get-next-release.outputs.next-release-notes }}
-  build:
-    needs: get-next-release
-    if: needs.get-next-release.outputs.next-release-published == 'true'
-    permissions:
-      contents: write
-    strategy:
-      fail-fast: false
-      matrix:
-        platform: [ macos-latest ]
-    runs-on: ${{ matrix.platform }}
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      #      - uses: actions/checkout@v3
+      #        with:
+      #          fetch-depth: 0
+      #      - name: Setup Node.js
+      #        uses: actions/setup-node@v3
+      #      - name: Install dependencies
+      #        run: npm install @actions/core
+      #      - name: Release
+      #        id: get-next-release
+      #        env:
+      #          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #        run: npx semantic-release --dry-run
+      #    outputs:
+      #      next-release-published: ${{ steps.get-next-release.outputs.next-release-published }}
+      #      next-release-version: ${{ steps.get-next-release.outputs.next-release-version }}
+      #      next-release-git-tag: ${{ steps.get-next-release.outputs.next-release-git-tag }}
+      #      next-release-notes: ${{ steps.get-next-release.outputs.next-release-notes }}
+      #  build:
+      #    needs: get-next-release
+      #    if: needs.get-next-release.outputs.next-release-published == 'true'
+      #    permissions:
+      #      contents: write
+      #    strategy:
+      #      fail-fast: false
+      #      matrix:
+      #        platform: [ macos-latest ]
+      #    runs-on: ${{ matrix.platform }}
+      #    steps:
+      #      - name: Checkout repository
+      #        uses: actions/checkout@v3
+      #
+      #      - name: Rust setup
+      #        uses: dtolnay/rust-toolchain@stable
+      #
+      #      - name: Rust cache
+      #        uses: swatinem/rust-cache@v2
+      #        with:
+      #          workspaces: './src-tauri -> target'
+      #
+      #      - name: Sync node version and setup cache
+      #        uses: actions/setup-node@v3
+      #        with:
+      #          cache: 'npm' # Set this to npm, yarn or pnpm.
+      #
+      #      - name: Install frontend dependencies
+      #        # If you don't have `beforeBuildCommand` configured you may want to build your frontend here too.
+      #        run: npm install # Change this to npm, yarn or pnpm.
+      #
+      #      - name: Build the app
+      #        uses: tauri-apps/tauri-action@v0
+      #        env:
+      #          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #        with:
+      #          tagName: ${{ needs.get-next-release.outputs.next-release-git-tag }}
+      #          releaseName: ${{ needs.get-next-release.outputs.next-release-version }}
+      #          releaseBody: ${{ needs.get-next-release.outputs.next-release-notes }}
+      #          releaseDraft: false
+      #          prerelease: true
+      #
 
-      - name: Rust setup
-        uses: dtolnay/rust-toolchain@stable
+      - name: Updater update
+        run: |
+          curl -X "PATCH" "https://api.github.com/gists/6639eb2bf829c4f8bd8c62e0ea4b6285" \
+          -H 'Accept: application/vnd.github+json' \
+          -H 'Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
+          -H 'X-Github-Api-Version: 2022-11-28' \
+          -H 'Content-Type: application/json; charset=utf-8' \
+          -d $'{
+            "files": {
+              "pulp-updater.json": {
+                "content": "{
+                  \\"version\\": \\"1.12.1\\",
+                  \\"notes\\": \\"\\",
+                  \\"pub_date\\": \\"2023-06-02T21:59:57.334Z\\",
+                  \\"platforms\\": {
+                    \\"windows-x86_64\\": {
+                      \\"signature\\": \\"dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVUWXdVQUxTRGFqQVU3YlVWelVSbUdKbDJoaVpzVGVCR3d0NEVWZXM0RnVXSlpjN3hBV0JPUTQ2TXBTRHhkRnJDczdac3VHbDBrTVBRbDJ4N0V1cm42aGViMTlITGdIZ1E4PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNjg1NzQzMTkzCWZpbGU6UnVuTWF0aF8xLjEyLjFfeDY0X2VuLVVTLm1zaS56aXAKKzFGbVBSSUdZTzV1dFhWc2J6VWlBZ1NIRXZ0TEkwWC9iMFE2N2tMenVrTDAxSU5hUmlZbThhOFB0R05MaEtZd3dMbU01d1U2UVZBNUJ5Zm5GSEY4RFE9PQo=\\",
+                      \\"url\\": \\"https://github.com/dubisdev/runmath/releases/download/v1.12.1/RunMath_1.12.1_x64_en-US.msi.zip\\"
+                    }
+                  }
+                }"
+              }
+            }
+          }'
 
-      - name: Rust cache
-        uses: swatinem/rust-cache@v2
-        with:
-          workspaces: './src-tauri -> target'
 
-      - name: Sync node version and setup cache
-        uses: actions/setup-node@v3
-        with:
-          cache: 'npm' # Set this to npm, yarn or pnpm.
-
-      - name: Install frontend dependencies
-        # If you don't have `beforeBuildCommand` configured you may want to build your frontend here too.
-        run: npm install # Change this to npm, yarn or pnpm.
-
-      - name: Build the app
-        uses: tauri-apps/tauri-action@v0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tagName: ${{ needs.get-next-release.outputs.next-release-git-tag }}
-          releaseName: ${{ needs.get-next-release.outputs.next-release-version }}
-          releaseBody: ${{ needs.get-next-release.outputs.next-release-notes }}
-          releaseDraft: false
-          prerelease: true
