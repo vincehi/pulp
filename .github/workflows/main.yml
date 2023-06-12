@@ -84,8 +84,8 @@ jobs:
           # json=$(echo "$json" | sed "s/\${VERSION}/yes/g")
           
           echo $json
-          json_string=$(echo $json | jq -c -r tostring)
-          echo $json_string
+          json_string=$(echo $json | jq -c)
+          echo printf "%q\n" "$json_string"
           
           curl -X "PATCH" "https://api.github.com/gists/6639eb2bf829c4f8bd8c62e0ea4b6285" \
                 -H 'Accept: application/vnd.github+json' \
@@ -95,7 +95,7 @@ jobs:
                 -d $'{
             "files": {
               "pulp-updater.json": {
-                "content": printf "%q\n" $json_string
+                "content": $json | sed 's/"/\\"/g
               }
             }
           }'
