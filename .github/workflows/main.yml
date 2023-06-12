@@ -75,9 +75,9 @@ jobs:
       #          releaseDraft: false
       #          prerelease: true
       #
-
-      - name: Updater update
+      - name: Checkout code
         uses: actions/checkout@v3
+      - name: Updater update
         run: |
           content=$(cat ${GITHUB_WORKSPACE}/pulp-updater.json)
           echo "$content"
