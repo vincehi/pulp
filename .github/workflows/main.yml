@@ -77,7 +77,7 @@ jobs:
       #
 
       - name: Updater update
-        working-directory: ./tools
+        working-directory: tools
         run: |
           json=$(cat pulp-updater.json)
           
