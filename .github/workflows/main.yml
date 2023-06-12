@@ -78,7 +78,7 @@ jobs:
 
       - name: Updater update
         run: |
-          json=$(cat ${{ github.action_path }}/pulp-updater.json)
+          json=$(cat "${{ github.action_path }}/pulp-updater.json")
           
           
           json=$(echo "$json" | sed "s/\${VERSION}/yes/g")
