@@ -1,9 +1,9 @@
-import { deleteDirectories, scanDirectory } from "@/services/directories";
 import { type Directory } from "@prisma/client";
-import { confirm } from "@tauri-apps/api/dialog";
+import { confirm, message } from "@tauri-apps/api/dialog";
 import { Icon } from "solid-heroicons";
 import { documentMagnifyingGlass, trash } from "solid-heroicons/outline";
 import { type Component } from "solid-js";
+import { createDirectory, CustomError, deleteDirectory, scanDirectory } from "@/services/directories";
 
 const ActionsDirectory: Component<{
   directory: Directory;
@@ -24,13 +24,13 @@ const ActionsDirectory: Component<{
               }
             );
             if (response) {
-              await deleteDirectories([props.directory.path]);
+              await deleteDirectory(props.directory.path);
             }
           })();
         }}
         title={`Remove ${props.directory.name}`}
       >
-        <Icon path={trash} class="w-4" />
+        <Icon path={trash} class="w-4"/>
       </button>
       <button
         class="text-gray-500 hover:text-gray-900"
@@ -46,13 +46,23 @@ const ActionsDirectory: Component<{
               }
             );
             if (response) {
-              await scanDirectory(props.directory.path);
+              try {
+                await deleteDirectory(props.directory.path);
+                await createDirectory(props.directory.path);
+                await scanDirectory(props.directory.path);
+              } catch (error) {
+                if (error instanceof CustomError) {
+                  await message(error.message, error.options);
+                  return;
+                }
+                console.error(error);
+              }
             }
           })();
         }}
         title={`Scanning ${props.directory.name}`}
       >
-        <Icon path={documentMagnifyingGlass} class="w-4" />
+        <Icon path={documentMagnifyingGlass} class="w-4"/>
       </button>
     </>
   );

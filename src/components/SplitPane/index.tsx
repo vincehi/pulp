@@ -15,17 +15,17 @@ export const SplitPane: ParentComponent<
   const c = children(() => props.children);
 
   onMount(() => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [_, rest] = splitProps(props, ["children"]);
     const inst = split(c() as HTMLElement[], {
-      gutter: (index, direction) => {
+      gutter: (_index, direction) => {
         const gutter = document.createElement("div");
-        gutter.className = props.gutterClass || `gutter gutter-${direction}`;
+        gutter.className = props.gutterClass ?? `gutter gutter-${direction}`;
         return gutter;
       },
       ...rest,
     });
     onCleanup(() => {
-      console.log("la");
       inst.destroy();
     });
   });

@@ -34,10 +34,9 @@
     "postcss": "^8.4.21",
     "prisma": "^4.9.0",
     "semantic-release": "^21.0.3",
-    "semantic-release-export-data": "file:./tools/semantic-release-export-data.js",
     "tailwindcss": "^3.2.7",
     "typescript": "^4.9.5",
-    "vite": "^4.0.4",
+    "vite": "^4.0.5",
     "vite-plugin-solid": "^2.5.0"
   },
   "dependencies": {
