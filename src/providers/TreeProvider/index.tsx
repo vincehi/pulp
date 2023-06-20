@@ -6,11 +6,12 @@ import {
   createResource,
   createSignal,
   mapArray,
-  type Component,
+  type Component, createMemo, onCleanup,
 } from "solid-js";
 import { produce } from "solid-js/store";
 import { Dynamic } from "solid-js/web";
 import { useSearch } from "../SearchProvider";
+import { listen } from "@tauri-apps/api/event";
 
 export interface MappedDirectory extends Directory {
   readonly isCollapsed: boolean;
@@ -23,13 +24,22 @@ const TreeProvider: Component<{
     mapped: () => MappedDirectory[];
   }>;
 }> = (props) => {
-  const [store, { setCollapse }] = useSearch();
+  const [store, {setCollapse}] = useSearch();
+
+  const [eventWalkDir, setEventWalkDir] = createSignal({})
+
+  const unlisten = (async () => {
+    await listen('event-walk-directory', (event) => {
+      setEventWalkDir(event?.payload)
+    })
+  })();
+
 
   createEffect(() => {
     setCollapse((prevCollapsed) => {
       return directories.map((dir) => {
         const dirPath = dir.path;
-        const currentCollapsed = prevCollapsed.find(({ rootDirectory }) =>
+        const currentCollapsed = prevCollapsed.find(({rootDirectory}) =>
           startsWith(dirPath, rootDirectory)
         );
         return {
@@ -42,7 +52,7 @@ const TreeProvider: Component<{
 
   const toggleCollapseItem = (itemPath: string, isCollapsed: boolean): void => {
     const itemPathSlash = itemPath + "/";
-    const index = store.collapsed.findIndex(({ rootDirectory }) =>
+    const index = store.collapsed.findIndex(({rootDirectory}) =>
       startsWith(itemPathSlash, rootDirectory)
     );
     switch (isCollapsed) {
@@ -81,7 +91,7 @@ const TreeProvider: Component<{
     return (
       Boolean(
         store.collapsed
-          .find(({ rootDirectory }) => startsWith(itemPath, rootDirectory))
+          .find(({rootDirectory}) => startsWith(itemPath, rootDirectory))
           ?.collapsed.some((path) => path === itemPath + "/") ?? false // TODO: I think `?? false` is not utilized
       ) || false
     );
@@ -100,8 +110,8 @@ const TreeProvider: Component<{
         ): Promise<FileEntry[] | never[]> =>
           collapsed
             ? await readDir(model.path, {
-                recursive: false,
-              })
+              recursive: false,
+            })
             : [];
 
         const [children] = createResource(getCollapsed, fetchDir);
@@ -113,6 +123,14 @@ const TreeProvider: Component<{
         return {
           path: model.path,
           name: model.name,
+          
+          get filesCount() {
+            if (model.path === eventWalkDir()?.directory_path) {
+              return eventWalkDir()?.files_count
+            } else {
+              return 0
+            }
+          },
 
           get isCollapsed() {
             return getCollapsed();
@@ -129,7 +147,7 @@ const TreeProvider: Component<{
       }
     );
 
-  return <Dynamic component={props.children} mapped={mapped(directories)} />;
+  return <Dynamic component={props.children} mapped={mapped(directories)}/>;
 };
 
 export default TreeProvider;

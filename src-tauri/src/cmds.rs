@@ -1,8 +1,11 @@
+use crate::_include_file;
 use crate::prisma_main_client::{directory, file};
 use crate::utils::app::AppState;
 use prisma_client_rust::and;
 use prisma_client_rust::operator::or;
 use prisma_client_rust::prisma_errors::query_engine::UniqueKeyViolation;
+use prisma_client_rust::query_core::schema_builder::constants::output_fields::AFFECTED_COUNT;
+use tauri::Manager;
 use walkdir::WalkDir;
 
 #[tauri::command]
@@ -97,8 +100,15 @@ pub async fn get_directory_files(
   };
 }
 
+#[derive(Clone, serde::Serialize)]
+struct Payload {
+  files_count: i32,
+  directory_path: String,
+}
+
 #[tauri::command]
 pub async fn scan_directory(
+  app_handle: tauri::AppHandle,
   path_dir: String,
   state: tauri::State<'_, AppState>,
 ) -> Result<Vec<file::Data>, String> {
@@ -112,6 +122,7 @@ pub async fn scan_directory(
     _ => return Err(format!("No file found in directory: {}", path_dir)),
   };
   let mut result = Vec::with_capacity(walk_dir.len());
+  let mut files_counter = 0;
   for path_file in walk_dir {
     if let Some(ext) = path_file.path().extension() {
       if ext == "wav" || ext == "mp3" {
@@ -133,7 +144,20 @@ pub async fn scan_directory(
           .exec()
           .await
         {
-          Ok(file) => result.push(file),
+          Ok(file) => {
+            files_counter += 1;
+            app_handle
+              .emit_all(
+                "event-walk-directory",
+                Payload {
+                  directory_path: path_dir_string.clone(),
+                  files_count: files_counter,
+                },
+              )
+              .unwrap();
+
+            result.push(file)
+          }
           Err(error) if error.is_prisma_error::<UniqueKeyViolation>() => {
             return Err(format!("File already exists: {}", last_part))
           }
