@@ -8,11 +8,11 @@ import WavePlayer from "@/components/WavePlayer";
 const App: Component = () => {
   return (
     <SearchProvider>
-      <Navbar />
-      <Sidebar />
+      <Navbar/>
+      <Sidebar/>
       <div class="relative">
-        <ViewFiles />
-        <WavePlayer />
+        <ViewFiles/>
+        <WavePlayer/>
       </div>
     </SearchProvider>
   );

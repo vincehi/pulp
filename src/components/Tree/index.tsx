@@ -43,16 +43,19 @@ const Tree: Component<{
 
               <span class="overflow-hidden overflow-ellipsis whitespace-nowrap">
                 {item.name}
+                <Show when={props.isRoot}>
+                  {" "}({item.filesCount})
+                </Show>
               </span>
               <Show when={props.isRoot}>
                 <div class="flex items-center ml-auto">
-                  <ActionsDirectory directory={item} />
+                  <ActionsDirectory directory={item}/>
                 </div>
               </Show>
             </button>
             <Show when={item.isCollapsed}>
               <ul class="ml-4">
-                <Tree items={item.children} />
+                <Tree items={item.children}/>
               </ul>
             </Show>
           </li>
