@@ -1,21 +1,39 @@
-import { createDirectory, CustomError, scanDirectory } from "@/services/directories";
+import {
+  createDirectory,
+  CustomError,
+  scanDirectory,
+} from "@/services/directories";
 import { message, open } from "@tauri-apps/api/dialog";
 import { isEmpty } from "lodash-es";
 import { Icon } from "solid-heroicons";
 import { plusCircle } from "solid-heroicons/outline";
 import { createEffect, createSignal, type Component } from "solid-js";
+import { useWalkDir } from "@/providers/WalkDir";
 
 const AddDirectories: Component = () => {
-  const [getSelectedDirectories, setSelectedDirectories] = createSignal<string[]>([]);
+  const [getSelectedDirectories, setSelectedDirectories] = createSignal<
+    string[]
+  >([]);
+  const [_walkDirStore, walkDirActions] = useWalkDir();
 
   const openSelectedDirectories = (): void => {
-    void (async () => {
-      const selected = await open({
-        directory: true,
-        multiple: true,
-      }) as string[];
-      setSelectedDirectories(selected);
-    })();
+    void walkDirActions.scanProcessing(async (processing) => {
+      if (processing) {
+        await message(
+          "You cannot perform this action until the scan process has been completed.",
+          {
+            title: "Incomplete scan",
+            type: "error",
+          }
+        );
+      } else {
+        const selected = (await open({
+          directory: true,
+          multiple: true,
+        })) as string[];
+        setSelectedDirectories(selected);
+      }
+    });
   };
 
   createEffect(() => {
@@ -34,7 +52,7 @@ const AddDirectories: Component = () => {
             return;
           }
         }
-      })()
+      })();
       setSelectedDirectories([]);
     }
   });

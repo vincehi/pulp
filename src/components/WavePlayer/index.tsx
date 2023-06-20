@@ -21,11 +21,10 @@ const WavePlayer: Component = () => {
   });
 
   createEffect(() => {
-    console.log(store.autoPlay)
     const file = store.pathSelected;
     if (file !== "") {
-      wavesurfer.load(convertFileSrc(file))
-      wavesurfer.on('ready', function () {
+      wavesurfer.load(convertFileSrc(file));
+      wavesurfer.on("ready", function () {
         if (store.autoPlay) {
           void wavesurfer.play();
         }
@@ -34,23 +33,37 @@ const WavePlayer: Component = () => {
   }, [store.autoPlay]);
 
   const play = (): void => {
-    console.log(wavesurfer)
-    void wavesurfer.playPause()
-  }
+    void wavesurfer.playPause();
+  };
 
-  return <>
-    <div>
-      <div class="flex items-center mb-4">
-        <input id="default-checkbox" type="checkbox" checked={store.autoPlay} onChange={actions.toggleAutoPlay}
-               class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
-        <label for="default-checkbox" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Auto
-          play</label>
+  return (
+    <>
+      <div>
+        <div class="flex items-center mb-4">
+          <input
+            id="default-checkbox"
+            type="checkbox"
+            checked={store.autoPlay}
+            onChange={actions.toggleAutoPlay}
+            class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+          />
+          <label
+            for="default-checkbox"
+            class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+          >
+            Auto play
+          </label>
+        </div>
       </div>
-    </div>
-    <div ref={container}></div>
-    <button onClick={play} type="button"
-            class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">play/pause
-    </button>
-  </>
+      <div ref={container}></div>
+      <button
+        onClick={play}
+        type="button"
+        class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+      >
+        play/pause
+      </button>
+    </>
+  );
 };
 export default WavePlayer;

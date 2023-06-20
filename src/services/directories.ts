@@ -11,10 +11,6 @@ export interface Directory extends ClientDirectory {
 
 export const [directories, setDirectories] = createStore([] as Directory[]);
 
-export const [selectedDirectoies, setSelectedDirectoies] = createStore(
-  [] as string[]
-);
-
 export class CustomError extends Error {
   options;
 
@@ -39,7 +35,10 @@ export const createDirectory = async (pathDir: string): Promise<void> => {
     });
     setDirectories([...directories, response]);
   } catch (error) {
-    throw new CustomError(error as string, {title: "Create directory", type: "error"})
+    throw new CustomError(error as string, {
+      title: "Create directory",
+      type: "error",
+    });
   }
 };
 

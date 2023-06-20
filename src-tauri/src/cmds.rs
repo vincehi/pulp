@@ -3,6 +3,7 @@ use crate::utils::app::AppState;
 use prisma_client_rust::and;
 use prisma_client_rust::operator::or;
 use prisma_client_rust::prisma_errors::query_engine::UniqueKeyViolation;
+use tauri::Manager;
 use walkdir::WalkDir;
 
 #[tauri::command]
@@ -97,8 +98,15 @@ pub async fn get_directory_files(
   };
 }
 
+#[derive(Clone, serde::Serialize)]
+struct Payload {
+  processing: bool,
+  directory_path: String,
+}
+
 #[tauri::command]
 pub async fn scan_directory(
+  app_handle: tauri::AppHandle,
   path_dir: String,
   state: tauri::State<'_, AppState>,
 ) -> Result<Vec<file::Data>, String> {
@@ -111,7 +119,19 @@ pub async fn scan_directory(
     v if !v.is_empty() => v,
     _ => return Err(format!("No file found in directory: {}", path_dir)),
   };
+
   let mut result = Vec::with_capacity(walk_dir.len());
+
+  app_handle
+    .emit_all(
+      "event-walk-directory",
+      Payload {
+        processing: true,
+        directory_path: path_dir_string.clone(),
+      },
+    )
+    .unwrap();
+
   for path_file in walk_dir {
     if let Some(ext) = path_file.path().extension() {
       if ext == "wav" || ext == "mp3" {
@@ -148,8 +168,20 @@ pub async fn scan_directory(
       }
     }
   }
+
+  app_handle
+    .emit_all(
+      "event-walk-directory",
+      Payload {
+        processing: false,
+        directory_path: path_dir_string.clone(),
+      },
+    )
+    .unwrap();
+
   if result.is_empty() {
     return Err(format!("No audio files found in directory: {}", path_dir));
   }
+
   Ok(result)
 }

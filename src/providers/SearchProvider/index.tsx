@@ -22,7 +22,7 @@ interface SearchState {
   collapsed: Collapsed[];
   search: string;
   pathSelected: string;
-  autoPlay: boolean
+  autoPlay: boolean;
 }
 
 interface SearchActions {
@@ -41,7 +41,7 @@ const initialSearchStore: SearchState = {
   })),
   search: "",
   pathSelected: "",
-  autoPlay: false
+  autoPlay: false,
 };
 
 const SearchContext = createContext<SearchStore>();
@@ -53,7 +53,7 @@ export const SearchProvider: Component<{ children: JSX.Element }> = (props) => {
     })();
   });
 
-  const [store, setStore] = createStore<SearchState>(initialSearchStore);
+  const [store, setStore] = createStore(initialSearchStore);
 
   const searchStore = [
     store,

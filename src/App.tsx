@@ -4,17 +4,20 @@ import Navbar from "./screens/Main/layouts/Navbar";
 import Sidebar from "./screens/Main/layouts/Sidebar";
 import ViewFiles from "./screens/Main/layouts/ViewFiles";
 import WavePlayer from "@/components/WavePlayer";
+import { WalkDirProvider } from "@/providers/WalkDir";
 
 const App: Component = () => {
   return (
-    <SearchProvider>
-      <Navbar />
-      <Sidebar />
-      <div class="relative">
-        <ViewFiles />
-        <WavePlayer />
-      </div>
-    </SearchProvider>
+    <WalkDirProvider>
+      <SearchProvider>
+        <Navbar />
+        <Sidebar />
+        <div class="relative">
+          <ViewFiles />
+          <WavePlayer />
+        </div>
+      </SearchProvider>
+    </WalkDirProvider>
   );
 };
 

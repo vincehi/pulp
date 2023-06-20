@@ -44,6 +44,7 @@ const Tree: Component<{
               <span class="overflow-hidden overflow-ellipsis whitespace-nowrap">
                 {item.name}
               </span>
+
               <Show when={props.isRoot}>
                 <div class="flex items-center ml-auto">
                   <ActionsDirectory directory={item} />
