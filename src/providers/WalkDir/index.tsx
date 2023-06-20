@@ -1,10 +1,4 @@
-import {
-  type Component,
-  createContext,
-  createEffect,
-  type JSX,
-  useContext,
-} from "solid-js";
+import { type Component, createContext, type JSX, useContext } from "solid-js";
 import { listen } from "@tauri-apps/api/event";
 import { createStore } from "solid-js/store";
 
