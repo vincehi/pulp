@@ -14,9 +14,6 @@ interface WalkDirhState {
 
 interface WalkDirActions {
   stopWalkDir: () => void;
-  scanProcessing: (
-    callback: (processing: boolean) => Promise<void>
-  ) => Promise<void>;
 }
 
 type WalkDirStore = [WalkDirhState, WalkDirActions];
@@ -46,9 +43,6 @@ export const WalkDirProvider: Component<{ children: JSX.Element }> = (
     {
       stopWalkDir: () => {
         console.log("Stop walkDir");
-      },
-      scanProcessing: async (callback) => {
-        await callback(eventWalkDir.processing);
       },
     },
   ] as WalkDirStore;

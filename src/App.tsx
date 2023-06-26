@@ -12,10 +12,8 @@ const App: Component = () => {
       <SearchProvider>
         <Navbar />
         <Sidebar />
-        <div class="relative">
-          <ViewFiles />
-          <WavePlayer />
-        </div>
+        <ViewFiles />
+        <WavePlayer />
       </SearchProvider>
     </WalkDirProvider>
   );

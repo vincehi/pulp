@@ -3,6 +3,8 @@ use crate::utils::app::AppState;
 use prisma_client_rust::and;
 use prisma_client_rust::operator::or;
 use prisma_client_rust::prisma_errors::query_engine::UniqueKeyViolation;
+use std::path::PathBuf;
+use std::process::Command;
 use tauri::Manager;
 use walkdir::WalkDir;
 
@@ -96,6 +98,51 @@ pub async fn get_directory_files(
     Ok(files) => Ok(files),
     Err(e) => Err(e.to_string()),
   };
+}
+
+#[tauri::command]
+pub async fn open_in_finder(path: String) {
+  #[cfg(target_os = "windows")]
+  {
+    Command::new("explorer")
+      .args(["/select,", &path]) // The comma after select is not a typo
+      .spawn()
+      .unwrap();
+  }
+
+  #[cfg(target_os = "linux")]
+  {
+    if path.contains(",") {
+      // see https://gitlab.freedesktop.org/dbus/dbus/-/issues/76
+      let new_path = match metadata(&path).unwrap().is_dir() {
+        true => path,
+        false => {
+          let mut path2 = PathBuf::from(path);
+          path2.pop();
+          path2.into_os_string().into_string().unwrap()
+        }
+      };
+      Command::new("xdg-open").arg(&new_path).spawn().unwrap();
+    } else {
+      Command::new("dbus-send")
+        .args([
+          "--session",
+          "--dest=org.freedesktop.FileManager1",
+          "--type=method_call",
+          "/org/freedesktop/FileManager1",
+          "org.freedesktop.FileManager1.ShowItems",
+          format!("array:string:\"file://{path}\"").as_str(),
+          "string:\"\"",
+        ])
+        .spawn()
+        .unwrap();
+    }
+  }
+
+  #[cfg(target_os = "macos")]
+  {
+    Command::new("open").args(["-R", &path]).spawn().unwrap();
+  }
 }
 
 #[derive(Clone, serde::Serialize)]

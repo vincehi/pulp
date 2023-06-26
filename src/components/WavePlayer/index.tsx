@@ -37,7 +37,7 @@ const WavePlayer: Component = () => {
   };
 
   return (
-    <>
+    <div class="player">
       <div>
         <div class="flex items-center mb-4">
           <input
@@ -63,7 +63,7 @@ const WavePlayer: Component = () => {
       >
         play/pause
       </button>
-    </>
+    </div>
   );
 };
 export default WavePlayer;

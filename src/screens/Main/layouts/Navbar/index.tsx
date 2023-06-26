@@ -1,6 +1,6 @@
 import { type Component } from "solid-js";
 import { useSearch } from "@/providers/SearchProvider";
-import iconUrl from '../../../../assets/icon.png'
+import iconUrl from "../../../../assets/icon.png";
 
 const Navbar: Component = () => {
   const [store, actions] = useSearch();
@@ -10,11 +10,7 @@ const Navbar: Component = () => {
         <div class="flex items-center justify-between">
           <div class="flex items-center justify-start">
             <div class="flex ml-2 md:mr-24">
-              <img
-                src={iconUrl}
-                class="h-8 mr-3"
-                alt="FlowBite Logo"
-              />
+              <img src={iconUrl} class="h-8 mr-3" alt="FlowBite Logo" />
               <span class="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap dark:text-white">
                 Pulp
               </span>
@@ -25,10 +21,11 @@ const Navbar: Component = () => {
             <input
               type="text"
               placeholder="Search"
-              value={store.search}
+              class="input input-bordered input-sm w-full max-w-xs"
               onChange={(event) => {
                 actions.setSearch(event.currentTarget.value);
               }}
+              value={store.search}
             />
           </div>
         </div>
