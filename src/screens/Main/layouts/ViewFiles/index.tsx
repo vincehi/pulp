@@ -10,7 +10,6 @@ import {
   Show,
 } from "solid-js";
 import { type File } from "@prisma/client";
-import clsx from "clsx";
 import { Icon } from "solid-heroicons";
 import { magnifyingGlass } from "solid-heroicons/solid";
 
@@ -58,12 +57,26 @@ const ViewFiles: Component = () => {
         <thead>
           <tr>
             <th>Name</th>
-            <th>Action</th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
-          <Show when={!files.loading} fallback="Loading...">
-            <For each={files()} fallback="No files">
+          <Show
+            when={!files.loading}
+            fallback={
+              <tr>
+                <td>Loading...</td>
+              </tr>
+            }
+          >
+            <For
+              each={files()}
+              fallback={
+                <tr>
+                  <td>No files found</td>
+                </tr>
+              }
+            >
               {(file) => {
                 return (
                   <tr
@@ -72,12 +85,12 @@ const ViewFiles: Component = () => {
                     }}
                     onFocus={[actions.setPathSelected, file.path]}
                     tabIndex={0}
-                    class={clsx(
-                      store.pathSelected === file.path && "bg-base-200"
-                    )}
+                    classList={{
+                      "bg-base-200": store.pathSelected === file.path,
+                    }}
                   >
                     <td>{file.name}</td>
-                    <td>
+                    <td class="text-right">
                       <button
                         onClick={[openInFinder, file.path]}
                         title="Open in finder"

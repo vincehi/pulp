@@ -1,51 +1,71 @@
-import { type Component, createEffect, onMount } from "solid-js";
+import {
+  type Component,
+  createEffect,
+  createSignal,
+  Match,
+  onMount,
+  Switch,
+} from "solid-js";
 import WaveSurfer from "wavesurfer.js";
 import { useSearch } from "@/providers/SearchProvider";
 import { convertFileSrc } from "@tauri-apps/api/tauri";
+import { pause, play } from "solid-heroicons/solid";
+import { Icon } from "solid-heroicons";
+import { useLocalStorage } from "solidjs-use";
 // import styles from "./App.module.css";
 
 // https://dolby.io/blog/how-to-visualize-and-annotate-your-audio-with-wavesurfer-js-and-konva-in-solidjs/
 const WavePlayer: Component = () => {
-  const [store, actions] = useSearch();
+  const [store] = useSearch();
   let container!: HTMLDivElement, // Auto-referenced by the returning JSX
     wavesurfer: WaveSurfer;
+
+  const [isPlaying, setIsPlaying] = createSignal(false);
+
+  const [autoPlay, setAutoplay] = useLocalStorage("autoPlay", false);
 
   onMount(() => {
     wavesurfer = WaveSurfer.create({
       container,
       waveColor: "violet",
       progressColor: "purple",
-      responsive: true,
       interact: false,
     });
+    wavesurfer.on("ready", function () {
+      console.log("One init");
+      if (autoPlay()) {
+        void wavesurfer.play();
+      }
+    });
+    wavesurfer.on("play", () => {
+      setIsPlaying(true);
+    });
+    wavesurfer.on("pause", () => setIsPlaying(false));
+    wavesurfer.on("finish", () => setIsPlaying(false));
   });
 
   createEffect(() => {
     const file = store.pathSelected;
     if (file !== "") {
       wavesurfer.load(convertFileSrc(file));
-      wavesurfer.on("ready", function () {
-        if (store.autoPlay) {
-          void wavesurfer.play();
-        }
-      });
     }
-  }, [store.autoPlay]);
+  }, []);
 
-  const play = (): void => {
+  const handlePlayPause = (event: Event): void => {
+    event.preventDefault();
     void wavesurfer.playPause();
   };
 
   return (
-    <div class="player">
+    <div class="player p-4">
       <div>
         <div class="flex items-center mb-4">
           <input
             id="default-checkbox"
             type="checkbox"
-            checked={store.autoPlay}
-            onChange={actions.toggleAutoPlay}
-            class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+            checked={autoPlay()}
+            onChange={() => setAutoplay((prev) => prev === false)}
+            class="checkbox checkbox-sm"
           />
           <label
             for="default-checkbox"
@@ -55,14 +75,26 @@ const WavePlayer: Component = () => {
           </label>
         </div>
       </div>
-      <div ref={container}></div>
-      <button
-        onClick={play}
-        type="button"
-        class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-      >
-        play/pause
-      </button>
+      <div ref={container} />
+
+      <label class="swap">
+        <Switch>
+          <Match when={isPlaying()}>
+            <input type="checkbox" checked={true} onClick={handlePlayPause} />
+          </Match>
+          <Match when={!isPlaying()}>
+            <input type="checkbox" checked={false} onClick={handlePlayPause} />
+          </Match>
+        </Switch>
+        <Icon
+          path={play}
+          class="swap-off flex-shrink-0 w-6 h-6 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
+        />
+        <Icon
+          path={pause}
+          class="swap-on flex-shrink-0 w-6 h-6 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
+        />
+      </label>
     </div>
   );
 };

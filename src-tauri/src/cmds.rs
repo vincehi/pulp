@@ -3,7 +3,6 @@ use crate::utils::app::AppState;
 use prisma_client_rust::and;
 use prisma_client_rust::operator::or;
 use prisma_client_rust::prisma_errors::query_engine::UniqueKeyViolation;
-use std::path::PathBuf;
 use std::process::Command;
 use tauri::Manager;
 use walkdir::WalkDir;

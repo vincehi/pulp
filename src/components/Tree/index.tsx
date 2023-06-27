@@ -3,7 +3,6 @@ import { Icon } from "solid-heroicons";
 import { folder } from "solid-heroicons/outline";
 import { For, Show, type Component } from "solid-js";
 import ActionsDirectory from "../ActionsDirectory";
-import clsx from "clsx";
 
 const Tree: Component<{
   items: MappedDirectory[];
@@ -17,10 +16,8 @@ const Tree: Component<{
             <button
               onClick={item.toggleCollapseItem}
               type="button"
-              class={clsx(
-                "btn btn-ghost btn-sm btn-block flex items-center flex-nowrap justify-start mb-1 normal-case",
-                item.isCollapsed && "btn-active"
-              )}
+              class="btn btn-ghost btn-sm btn-block flex items-center flex-nowrap justify-start mb-1 normal-case"
+              classList={{ "btn-active": item.isCollapsed }}
             >
               <Icon
                 path={folder}

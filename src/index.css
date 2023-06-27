@@ -32,8 +32,27 @@ body {
 }
 
 .sidebar {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr calc(48px + 2rem);
+    gap: 0px 0px;
+    grid-template-areas:
+    "sidebar-main"
+    "sidebar-actions";
     overflow: scroll;
     grid-area: sidebar;
+}
+
+.sidebar-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    grid-area: sidebar-actions;
+}
+
+.sidebar-main {
+    overflow: scroll;
+    grid-area: sidebar-main;
 }
 
 .files {
