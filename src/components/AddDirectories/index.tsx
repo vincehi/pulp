@@ -14,11 +14,11 @@ const AddDirectories: Component = () => {
   const [getSelectedDirectories, setSelectedDirectories] = createSignal<
     string[]
   >([]);
-  const [_walkDirStore, walkDirActions] = useWalkDir();
+  const [walkDirStore] = useWalkDir();
 
   const openSelectedDirectories = (): void => {
-    void walkDirActions.scanProcessing(async (processing) => {
-      if (processing) {
+    void (async () => {
+      if (walkDirStore.processing) {
         await message(
           "You cannot perform this action until the scan process has been completed.",
           {
@@ -33,7 +33,7 @@ const AddDirectories: Component = () => {
         })) as string[];
         setSelectedDirectories(selected);
       }
-    });
+    })();
   };
 
   createEffect(() => {
@@ -61,7 +61,7 @@ const AddDirectories: Component = () => {
     <button
       onClick={openSelectedDirectories}
       type="button"
-      class="flex items-center w-full p-2 text-base font-normal text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
+      class="btn btn-block"
     >
       <Icon
         path={plusCircle}

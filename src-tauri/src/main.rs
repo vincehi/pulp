@@ -49,7 +49,8 @@ async fn main() {
       cmds::create_directory,
       cmds::delete_directory,
       cmds::scan_directory,
-      cmds::get_directory_files
+      cmds::get_directory_files,
+      cmds::open_in_finder,
     ])
     .menu(tauri::Menu::os_default(&context.package_info().name))
     .run(context)

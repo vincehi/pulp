@@ -10,16 +10,13 @@ const Sidebar: Component = () => {
       class="sidebar transition-transform bg-white border-r border-gray-200 sm:translate-x-0 dark:bg-gray-800 dark:border-gray-700"
       aria-label="Sidebar"
     >
-      <div class="px-3 py-4 overflow-y-auto bg-gray-50 dark:bg-gray-800">
-        <ul class="space-y-2">
-          <TreeProvider>
-            {(props) => <Tree items={props.mapped()} isRoot={true} />}
-          </TreeProvider>
-
-          <li>
-            <AddDirectories />
-          </li>
-        </ul>
+      <ul class="sidebar-main px-3 py-4">
+        <TreeProvider>
+          {(props) => <Tree items={props.mapped()} isRoot={true} />}
+        </TreeProvider>
+      </ul>
+      <div class="sidebar-actions px-3">
+        <AddDirectories />
       </div>
     </aside>
   );

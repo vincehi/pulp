@@ -1,5 +1,5 @@
 import { useSearch } from "@/providers/SearchProvider";
-import { invoke } from "@tauri-apps/api";
+import { invoke, tauri } from "@tauri-apps/api";
 import { flatMap, some, startsWith } from "lodash-es";
 import {
   type Component,
@@ -10,6 +10,8 @@ import {
   Show,
 } from "solid-js";
 import { type File } from "@prisma/client";
+import { Icon } from "solid-heroicons";
+import { magnifyingGlass } from "solid-heroicons/solid";
 
 const filterStartsWith = (arr: string[]): string[] => {
   return arr.filter((item, index) => {
@@ -43,44 +45,66 @@ const ViewFiles: Component = () => {
     fetchDirectoryFiles
   );
 
+  const openInFinder = async (path: string, event: Event): Promise<void> => {
+    event.preventDefault();
+    event.stopPropagation();
+    await tauri.invoke("open_in_finder", { path });
+  };
+
   return (
-    <div
-      style={{ height: "calc(100vh - 300px" }}
-      class="files relative overflow-x-auto shadow-md sm:rounded-lg"
-    >
-      <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+    <div class="files relative overflow-x-auto shadow-md">
+      <table class="table">
+        <thead>
           <tr>
-            <th scope="col" class="px-6 py-3">
-              Name
-            </th>
+            <th>Name</th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
-          <Show when={!files.loading} fallback="Loading...">
-            <Show when={files()?.length} fallback="No results">
-              <For each={files()} fallback="No files">
-                {(file) => {
-                  return (
-                    <tr
-                      onClick={(event): void => {
-                        event.currentTarget.focus();
-                      }}
-                      onFocus={[actions.setPathSelected, file.path]}
-                      tabIndex={0}
-                      class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 focus:bg-gray-100 dark:hover:bg-gray-600 dark:focus:bg-gray-600"
-                    >
-                      <th
-                        scope="row"
-                        class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+          <Show
+            when={!files.loading}
+            fallback={
+              <tr>
+                <td>Loading...</td>
+              </tr>
+            }
+          >
+            <For
+              each={files()}
+              fallback={
+                <tr>
+                  <td>No files found</td>
+                </tr>
+              }
+            >
+              {(file) => {
+                return (
+                  <tr
+                    onClick={(event): void => {
+                      event.currentTarget.focus();
+                    }}
+                    onFocus={[actions.setPathSelected, file.path]}
+                    tabIndex={0}
+                    classList={{
+                      "bg-base-200": store.pathSelected === file.path,
+                    }}
+                  >
+                    <td>{file.name}</td>
+                    <td class="text-right">
+                      <button
+                        onClick={[openInFinder, file.path]}
+                        title="Open in finder"
                       >
-                        {file.name}
-                      </th>
-                    </tr>
-                  );
-                }}
-              </For>
-            </Show>
+                        <Icon
+                          path={magnifyingGlass}
+                          class="flex-shrink-0 w-4 h-4 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
+                        />
+                      </button>
+                    </td>
+                  </tr>
+                );
+              }}
+            </For>
           </Show>
         </tbody>
       </table>
