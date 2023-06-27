@@ -117,11 +117,13 @@ const TreeProvider: Component<{
           get isCollapsed() {
             return getCollapsed();
           },
+
           get children() {
             return mapped(
               children()?.filter((item) => Array.isArray(item.children))
             )();
           },
+
           toggleCollapseItem: () => {
             toggleCollapseItem(model.path, getCollapsed());
           },

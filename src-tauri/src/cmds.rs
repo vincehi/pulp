@@ -3,6 +3,8 @@ use crate::utils::app::AppState;
 use prisma_client_rust::and;
 use prisma_client_rust::operator::or;
 use prisma_client_rust::prisma_errors::query_engine::UniqueKeyViolation;
+use std::process::Command;
+use tauri::Manager;
 use walkdir::WalkDir;
 
 #[tauri::command]
@@ -98,7 +100,59 @@ pub async fn get_directory_files(
 }
 
 #[tauri::command]
+pub async fn open_in_finder(path: String) {
+  #[cfg(target_os = "windows")]
+  {
+    Command::new("explorer")
+      .args(["/select,", &path]) // The comma after select is not a typo
+      .spawn()
+      .unwrap();
+  }
+
+  #[cfg(target_os = "linux")]
+  {
+    if path.contains(",") {
+      // see https://gitlab.freedesktop.org/dbus/dbus/-/issues/76
+      let new_path = match metadata(&path).unwrap().is_dir() {
+        true => path,
+        false => {
+          let mut path2 = PathBuf::from(path);
+          path2.pop();
+          path2.into_os_string().into_string().unwrap()
+        }
+      };
+      Command::new("xdg-open").arg(&new_path).spawn().unwrap();
+    } else {
+      Command::new("dbus-send")
+        .args([
+          "--session",
+          "--dest=org.freedesktop.FileManager1",
+          "--type=method_call",
+          "/org/freedesktop/FileManager1",
+          "org.freedesktop.FileManager1.ShowItems",
+          format!("array:string:\"file://{path}\"").as_str(),
+          "string:\"\"",
+        ])
+        .spawn()
+        .unwrap();
+    }
+  }
+
+  #[cfg(target_os = "macos")]
+  {
+    Command::new("open").args(["-R", &path]).spawn().unwrap();
+  }
+}
+
+#[derive(Clone, serde::Serialize)]
+struct Payload {
+  processing: bool,
+  directory_path: String,
+}
+
+#[tauri::command]
 pub async fn scan_directory(
+  app_handle: tauri::AppHandle,
   path_dir: String,
   state: tauri::State<'_, AppState>,
 ) -> Result<Vec<file::Data>, String> {
@@ -111,7 +165,19 @@ pub async fn scan_directory(
     v if !v.is_empty() => v,
     _ => return Err(format!("No file found in directory: {}", path_dir)),
   };
+
   let mut result = Vec::with_capacity(walk_dir.len());
+
+  app_handle
+    .emit_all(
+      "event-walk-directory",
+      Payload {
+        processing: true,
+        directory_path: path_dir_string.clone(),
+      },
+    )
+    .unwrap();
+
   for path_file in walk_dir {
     if let Some(ext) = path_file.path().extension() {
       if ext == "wav" || ext == "mp3" {
@@ -148,8 +214,20 @@ pub async fn scan_directory(
       }
     }
   }
+
+  app_handle
+    .emit_all(
+      "event-walk-directory",
+      Payload {
+        processing: false,
+        directory_path: path_dir_string.clone(),
+      },
+    )
+    .unwrap();
+
   if result.is_empty() {
     return Err(format!("No audio files found in directory: {}", path_dir));
   }
+
   Ok(result)
 }

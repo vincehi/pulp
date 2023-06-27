@@ -22,14 +22,12 @@ interface SearchState {
   collapsed: Collapsed[];
   search: string;
   pathSelected: string;
-  autoPlay: boolean
 }
 
 interface SearchActions {
   setCollapse: SetStoreFunction<Collapsed[]>;
   setSearch: SetStoreFunction<string>;
   setPathSelected: SetStoreFunction<string>;
-  toggleAutoPlay: () => void;
 }
 
 type SearchStore = [SearchState, SearchActions];
@@ -41,7 +39,6 @@ const initialSearchStore: SearchState = {
   })),
   search: "",
   pathSelected: "",
-  autoPlay: false
 };
 
 const SearchContext = createContext<SearchStore>();
@@ -53,7 +50,7 @@ export const SearchProvider: Component<{ children: JSX.Element }> = (props) => {
     })();
   });
 
-  const [store, setStore] = createStore<SearchState>(initialSearchStore);
+  const [store, setStore] = createStore(initialSearchStore);
 
   const searchStore = [
     store,
@@ -68,9 +65,6 @@ export const SearchProvider: Component<{ children: JSX.Element }> = (props) => {
       },
       setPathSelected: (path: StoreSetter<string, ["pathSelected"]>) => {
         setStore("pathSelected", path);
-      },
-      toggleAutoPlay: () => {
-        setStore("autoPlay", (item) => !item);
       },
     },
   ] as SearchStore;
