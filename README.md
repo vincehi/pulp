@@ -1,4 +1,4 @@
-<div align="center" style="text-align: center"><img src="https://raw.githubusercontent.com/bazalp/pulp/main/icons/icon-test.png" width="230" alt="2kama logo"/></div>
+<div align="center" style="text-align: center"><img src="https://raw.githubusercontent.com/bazalp/pulp/main/icons/icon-test.png" width="80" alt="pulp logo"/></div>
 
 # Pulp - Open Source Audio Sample Manager
 
@@ -6,6 +6,8 @@ Pulp is an open source alternative
 to [ADSR Sample Manager](https://www.adsrsounds.com/product/software/adsr-sample-manager/). This application allows you
 to scan a folder, retrieve audio files, automatically detect the audio key, and organize them effectively. In addition
 to being an audio sample management tool, Pulp is also an audio file explorer.
+
+<div align="center" style="text-align: center; padding: 20px"><img src="https://raw.githubusercontent.com/bazalp/pulp/main/assets/img/app-pulp.png" width="100%" alt="pulp logo"/></div>
 
 ## Features
 
