@@ -1,6 +1,6 @@
 import type { Directory as ClientDirectory } from "@prisma/client";
 import { invoke } from "@tauri-apps/api";
-import { message } from "@tauri-apps/api/dialog";
+import { type MessageDialogOptions } from "@tauri-apps/api/dialog";
 import { type FileEntry } from "@tauri-apps/api/fs";
 import { createStore } from "solid-js/store";
 
@@ -11,9 +11,15 @@ export interface Directory extends ClientDirectory {
 
 export const [directories, setDirectories] = createStore([] as Directory[]);
 
-export const [selectedDirectoies, setSelectedDirectoies] = createStore(
-  [] as string[]
-);
+export class CustomError extends Error {
+  options;
+
+  constructor(message: string, options?: string | MessageDialogOptions) {
+    super(message);
+    this.name = "CustomError";
+    this.options = options;
+  }
+}
 
 export const getAllDirectories = async (): Promise<void> => {
   console.log("getAllDirectories");
@@ -21,46 +27,48 @@ export const getAllDirectories = async (): Promise<void> => {
   setDirectories(response);
 };
 
-export const createDirectories = async (pathsDir: string[]): Promise<void> => {
-  console.log("createDirectories");
-  for (const pathDir of pathsDir) {
-    try {
-      const response: Directory = await invoke("create_directory", {
-        pathDir,
-      });
-      setDirectories([...directories, response]);
-      // TODO : scan response
-    } catch (error) {
-      await message(error as string, {
-        title: "Create directory",
-        type: "error",
-      });
-    }
+export const createDirectory = async (pathDir: string): Promise<void> => {
+  console.log("createDirectory");
+  try {
+    const response: Directory = await invoke("create_directory", {
+      pathDir,
+    });
+    setDirectories([...directories, response]);
+  } catch (error) {
+    throw new CustomError(error as string, {
+      title: "Create directory",
+      type: "error",
+    });
   }
 };
 
-export const deleteDirectories = async (pathsDir: string[]): Promise<void> => {
-  console.log("deleteDirectories");
-  for (const pathDir of pathsDir) {
-    try {
-      const response: Directory = await invoke("delete_directory", {
-        pathDir,
-      });
-      setDirectories((prevDirectories) =>
-        prevDirectories.filter((directory) => response.path !== directory.path)
-      );
-    } catch (error) {
-      await message(error as string, {
-        title: "Delete directory",
-        type: "error",
-      });
-    }
+export const deleteDirectory = async (pathDir: string): Promise<void> => {
+  console.log("deleteDirectory");
+  try {
+    const response: Directory = await invoke("delete_directory", {
+      pathDir,
+    });
+    setDirectories((prevDirectories) =>
+      prevDirectories.filter((directory) => response.path !== directory.path)
+    );
+  } catch (error) {
+    throw new CustomError(error as string, {
+      title: "Delete directory",
+      type: "error",
+    });
   }
 };
 
 export const scanDirectory = async (pathDir: string): Promise<void> => {
   console.log("scanDirectory");
-  await invoke("scan_directory", {
-    pathDir,
-  });
+  try {
+    await invoke("scan_directory", {
+      pathDir,
+    });
+  } catch (error) {
+    throw new CustomError(error as string, {
+      title: "Scan directory",
+      type: "error",
+    });
+  }
 };

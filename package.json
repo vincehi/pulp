@@ -23,6 +23,7 @@
     "@types/wavesurfer.js": "^6.0.6",
     "@typescript-eslint/eslint-plugin": "^5.50.0",
     "autoprefixer": "^10.4.13",
+    "daisyui": "^3.1.5",
     "dotenv": "^16.0.3",
     "eslint": "^8.33.0",
     "eslint-config-prettier": "^8.6.0",
@@ -32,12 +33,12 @@
     "eslint-plugin-promise": "^6.1.1",
     "eslint-plugin-solid": "~0.9.4",
     "postcss": "^8.4.21",
+    "prettier": "2.8.8",
     "prisma": "^4.9.0",
     "semantic-release": "^21.0.3",
-    "semantic-release-export-data": "file:./tools/semantic-release-export-data.js",
-    "tailwindcss": "^3.2.7",
+    "tailwindcss": "^3.3.2",
     "typescript": "^4.9.5",
-    "vite": "^4.0.4",
+    "vite": "^4.0.5",
     "vite-plugin-solid": "^2.5.0"
   },
   "dependencies": {
@@ -50,10 +51,11 @@
     "howler": "^2.2.3",
     "lodash-es": "^4.17.21",
     "solid-heroicons": "^3.1.1",
-    "solid-js": "^1.6.0",
+    "solid-js": "^1.7.0",
+    "solidjs-use": "^2.2.0",
     "split.js": "^1.6.5",
     "wait-on": "^7.0.1",
-    "wavesurfer.js": "^6.6.3"
+    "wavesurfer.js": "^6.6.4"
   },
   "volta": {
     "node": "18.12.1"

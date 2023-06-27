@@ -1,7 +1,7 @@
 import { type MappedDirectory } from "@/providers/TreeProvider";
 import { Icon } from "solid-heroicons";
-import { folder, folderMinus, folderPlus } from "solid-heroicons/outline";
-import { For, Match, Show, Switch, type Component } from "solid-js";
+import { folder } from "solid-heroicons/outline";
+import { For, Show, type Component } from "solid-js";
 import ActionsDirectory from "../ActionsDirectory";
 
 const Tree: Component<{
@@ -16,34 +16,17 @@ const Tree: Component<{
             <button
               onClick={item.toggleCollapseItem}
               type="button"
-              class="flex items-center w-full p-2 text-base font-normal text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
+              class="btn btn-ghost btn-sm btn-block flex items-center flex-nowrap justify-start mb-1 normal-case"
+              classList={{ "btn-active": item.isCollapsed }}
             >
-              <Switch
-                fallback={
-                  <Icon
-                    path={folder}
-                    class="flex-shrink-0 w-6 h-6 mr-3 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
-                  />
-                }
-              >
-                <Match when={item.isCollapsed}>
-                  <Icon
-                    path={folderMinus}
-                    class="flex-shrink-0 w-6 h-6 mr-3 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
-                  />
-                </Match>
-
-                <Match when={!item.isCollapsed}>
-                  <Icon
-                    path={folderPlus}
-                    class="flex-shrink-0 w-6 h-6 mr-3 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
-                  />
-                </Match>
-              </Switch>
-
+              <Icon
+                path={folder}
+                class="flex-shrink-0 w-4 h-4 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
+              />
               <span class="overflow-hidden overflow-ellipsis whitespace-nowrap">
                 {item.name}
               </span>
+
               <Show when={props.isRoot}>
                 <div class="flex items-center ml-auto">
                   <ActionsDirectory directory={item} />
