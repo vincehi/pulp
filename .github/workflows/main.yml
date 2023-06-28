@@ -44,10 +44,10 @@ jobs:
         uses: actions/checkout@v3
       - name: Bump Cargo.toml version
         run: sed -i 's/version = "[0-9]\+\.[0-9]\+\.[0-9]\+"/version = "${{ needs.get-next-release.outputs.next-release-version }}"/' src-tauri/Cargo.toml
-      #      - name: Configure Git
-      #        run: |
-      #          git config --global user.name "GitHub Actions"
-      #          git config --global user.email "souricevincent@icloud.com"
+      - name: setup git config
+        run: |
+          git config user.name "GitHub Actions Bot"
+          git config user.email "<>"
       - name: Commit and push changes
         run: |
           git add src-tauri/Cargo.toml
