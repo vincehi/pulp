@@ -52,7 +52,7 @@ jobs:
         run: |
           git add src-tauri/Cargo.toml
           git commit -m "Bump Cargo.toml version"
-          git push origin develop
+          git push origin main
   build:
     needs: get-next-release
     if: needs.get-next-release.outputs.next-release-published == 'true'
