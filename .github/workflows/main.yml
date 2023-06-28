@@ -27,7 +27,7 @@ jobs:
         run: npm install @actions/core
       - name: Release
         id: get-next-release
-        env:
+        with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npx semantic-release --dry-run
     outputs:
