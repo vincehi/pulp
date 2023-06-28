@@ -27,7 +27,7 @@ jobs:
         run: npm install @actions/core
       - name: Release
         id: get-next-release
-        with:
+        env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npx semantic-release --dry-run
     outputs:
@@ -49,7 +49,7 @@ jobs:
           git config user.name "GitHub Actions Bot"
           git config user.email "<>"
       - name: Commit and push changes
-        env:
+        with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git add src-tauri/Cargo.toml
