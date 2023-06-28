@@ -42,6 +42,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GH_TOKEN }}
       - name: Bump Cargo.toml version
         run: sed -i 's/version = "[0-9]\+\.[0-9]\+\.[0-9]\+"/version = "${{ needs.get-next-release.outputs.next-release-version }}"/' src-tauri/Cargo.toml
       - name: setup git config
@@ -49,8 +51,6 @@ jobs:
           git config user.name "GitHub Actions Bot"
           git config user.email "<>"
       - name: Commit and push changes
-        with:
-          token: ${{ secrets.GH_TOKEN }}
         run: |
           git add src-tauri/Cargo.toml
           git commit -m "Bump Cargo.toml version"
