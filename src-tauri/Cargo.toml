@@ -1,12 +1,12 @@
 [package]
-name = "app"
+name = "pulp"
 version = "0.1.0"
-description = "A Tauri App"
-authors = ["you"]
+description = "Audio Sample Manager"
+authors = ["Bazalp"]
 license = ""
-repository = ""
+repository = "https://github.com/bazalp/pulp"
 default-run = "app"
-edition = "2021"
+edition = "2023"
 rust-version = "1.69"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html

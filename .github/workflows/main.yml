@@ -3,6 +3,8 @@ on:
   push:
     branches:
       - main
+    paths-ignore:
+      - 'src-tauri/Cargo.toml'
 
 permissions:
   contents: read # for checkout
@@ -33,6 +35,24 @@ jobs:
       next-release-version: ${{ steps.get-next-release.outputs.next-release-version }}
       next-release-git-tag: ${{ steps.get-next-release.outputs.next-release-git-tag }}
       next-release-notes: ${{ steps.get-next-release.outputs.next-release-notes }}
+  bump-and-push:
+    needs: get-next-release
+    #    if: needs.get-next-release.outputs.next-release-published == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Bump Cargo.toml version
+        run: sed -i 's/version = "[0-9]\+\.[0-9]\+\.[0-9]\+"/version = "${{ needs.get-next-release.outputs.next-release-version }}"/' src-tauri/Cargo.toml
+      #      - name: Configure Git
+      #        run: |
+      #          git config --global user.name "GitHub Actions"
+      #          git config --global user.email "souricevincent@icloud.com"
+      - name: Commit and push changes
+        run: |
+          git add src-tauri/Cargo.toml
+          git commit -m "Bump Cargo.toml version"
+          git push origin develop
   build:
     needs: get-next-release
     if: needs.get-next-release.outputs.next-release-published == 'true'
