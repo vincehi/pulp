@@ -50,7 +50,7 @@ jobs:
           git config user.email "<>"
       - name: Commit and push changes
         with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GH_TOKEN }}
         run: |
           git add src-tauri/Cargo.toml
           git commit -m "Bump Cargo.toml version"
