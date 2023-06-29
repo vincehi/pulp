@@ -49,7 +49,7 @@ jobs:
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
-          git add src-tauri/Cargo.toml
+          git add src-tauri/tauri.conf.json
           git commit -m "Bump version [skip ci]"
           git push
   build:
