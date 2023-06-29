@@ -1,6 +1,6 @@
 [package]
 name = "pulp"
-version = ""
+version = "0.1.0"
 description = "Audio Sample Manager"
 authors = ["Bazalp"]
 license = ""

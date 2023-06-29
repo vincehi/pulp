@@ -35,7 +35,7 @@ jobs:
       next-release-notes: ${{ steps.get-next-release.outputs.next-release-notes }}
   bump-and-push:
     needs: get-next-release
-    #    if: needs.get-next-release.outputs.next-release-published == 'true'
+    if: needs.get-next-release.outputs.next-release-published == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: write
