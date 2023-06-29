@@ -6,7 +6,7 @@ authors = ["Bazalp"]
 license = ""
 repository = "https://github.com/bazalp/pulp"
 default-run = "app"
-edition = "2023"
+edition = "2021"
 rust-version = "1.69"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
