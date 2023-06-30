@@ -45,56 +45,61 @@ jobs:
       - name: Bump Cargo.toml version
         run: |
           sed -i 's/"version": "[0-9]\+\.[0-9]\+\.[0-9]\+"/"version": "${{ needs.get-next-release.outputs.next-release-version }}"/' src-tauri/tauri.conf.json
-      - name: Commit and push changes
+      - name: Push commit changes
+        id: push-commit
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
           git add src-tauri/tauri.conf.json
           git commit -m "Bump version [skip ci]"
           git push
-  build:
-    needs:
-      - get-next-release
-      - bump-and-push
-    if: needs.get-next-release.outputs.next-release-published == 'true'
-    permissions:
-      contents: write
-    strategy:
-      fail-fast: false
-      matrix:
-        platform: [ macos-latest ]
-    runs-on: ${{ matrix.platform }}
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Rust setup
-        uses: dtolnay/rust-toolchain@stable
-
-      - name: Rust cache
-        uses: swatinem/rust-cache@v2
-        with:
-          workspaces: './src-tauri -> target'
-
-      - name: Sync node version and setup cache
-        uses: actions/setup-node@v3
-        with:
-          cache: 'npm' # Set this to npm, yarn or pnpm.
-
-      - name: Install frontend dependencies
-        # If you don't have `beforeBuildCommand` configured you may want to build your frontend here too.
-        run: npm install # Change this to npm, yarn or pnpm.
-
-      - name: Build the app
-        id: tauri-action
-        uses: tauri-apps/tauri-action@v0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
-          TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
-        with:
-          tagName: ${{ needs.get-next-release.outputs.next-release-git-tag }}
-          releaseName: ${{ needs.get-next-release.outputs.next-release-version }}
-          releaseBody: ${{ needs.get-next-release.outputs.next-release-notes }}
-          releaseDraft: false
-          prerelease: false
+          echo "::set-output name=last-commit-sha::$(git rev-parse HEAD)"
+      - name: Echo
+        run: |
+          echo "${{ steps.push-commit.outputs.last-commit-sha }}"
+#  build:
+#    needs:
+#      - get-next-release
+#      - bump-and-push
+#    if: needs.get-next-release.outputs.next-release-published == 'true'
+#    permissions:
+#      contents: write
+#    strategy:
+#      fail-fast: false
+#      matrix:
+#        platform: [ macos-latest ]
+#    runs-on: ${{ matrix.platform }}
+#    steps:
+#      - name: Checkout repository
+#        uses: actions/checkout@v3
+#
+#      - name: Rust setup
+#        uses: dtolnay/rust-toolchain@stable
+#
+#      - name: Rust cache
+#        uses: swatinem/rust-cache@v2
+#        with:
+#          workspaces: './src-tauri -> target'
+#
+#      - name: Sync node version and setup cache
+#        uses: actions/setup-node@v3
+#        with:
+#          cache: 'npm' # Set this to npm, yarn or pnpm.
+#
+#      - name: Install frontend dependencies
+#        # If you don't have `beforeBuildCommand` configured you may want to build your frontend here too.
+#        run: npm install # Change this to npm, yarn or pnpm.
+#
+#      - name: Build the app
+#        id: tauri-action
+#        uses: tauri-apps/tauri-action@v0
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#          TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+#          TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
+#        with:
+#          tagName: ${{ needs.get-next-release.outputs.next-release-git-tag }}
+#          releaseName: ${{ needs.get-next-release.outputs.next-release-version }}
+#          releaseBody: ${{ needs.get-next-release.outputs.next-release-notes }}
+#          releaseDraft: false
+#          prerelease: false
