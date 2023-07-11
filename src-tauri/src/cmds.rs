@@ -1,5 +1,6 @@
 use crate::prisma_main_client::{directory, file};
 use crate::utils::app::AppState;
+use crate::utils::extractor_music::extractor_music;
 use prisma_client_rust::and;
 use prisma_client_rust::operator::or;
 use prisma_client_rust::prisma_errors::query_engine::UniqueKeyViolation;
@@ -187,29 +188,38 @@ pub async fn scan_directory(
           None => return Err(format!("Invalid file name: {:?}", path_file.file_name())),
         };
 
-        match state
-          .prisma_client
-          .file()
-          .create(
-            path,
-            last_part.to_string(),
-            directory::path::equals(path_dir_string.clone()),
-            vec![],
-          )
-          .exec()
-          .await
-        {
-          Ok(file) => result.push(file),
-          Err(error) if error.is_prisma_error::<UniqueKeyViolation>() => {
-            return Err(format!("File already exists: {}", last_part))
+        let mut output_path = app_handle.path_resolver().app_data_dir().unwrap();
+        output_path.push("extractor_music.temp.json");
+
+        match extractor_music(path.clone(), output_path.to_string_lossy().to_string()).await {
+          Ok(output) => {
+            match state
+              .prisma_client
+              .file()
+              .create(
+                path,
+                last_part.to_string(),
+                directory::path::equals(path_dir_string.clone()),
+                output["rhythm"]["bpm"].as_f64().unwrap(),
+                vec![],
+              )
+              .exec()
+              .await
+            {
+              Ok(file) => result.push(file),
+              Err(error) if error.is_prisma_error::<UniqueKeyViolation>() => {
+                return Err(format!("File already exists: {}", last_part))
+              }
+              Err(error) => {
+                return Err(format!(
+                  "Error creating file '{}': {}",
+                  last_part,
+                  error.to_string()
+                ))
+              }
+            }
           }
-          Err(error) => {
-            return Err(format!(
-              "Error creating file '{}': {}",
-              last_part,
-              error.to_string()
-            ))
-          }
+          Err(error) => println!("Erreur : {:?}", error),
         }
       }
     }

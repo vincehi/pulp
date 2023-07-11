@@ -57,6 +57,7 @@ const ViewFiles: Component = () => {
         <thead>
           <tr>
             <th>Name</th>
+            <th>BPM</th>
             <th></th>
           </tr>
         </thead>
@@ -90,6 +91,7 @@ const ViewFiles: Component = () => {
                     }}
                   >
                     <td>{file.name}</td>
+                    <td>{file.bpm}</td>
                     <td class="text-right">
                       <button
                         onClick={[openInFinder, file.path]}
