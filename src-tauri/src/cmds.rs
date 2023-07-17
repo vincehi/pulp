@@ -4,6 +4,7 @@ use crate::utils::extractor_music::extractor_music;
 use prisma_client_rust::and;
 use prisma_client_rust::operator::or;
 use prisma_client_rust::prisma_errors::query_engine::UniqueKeyViolation;
+use serde_json::Value;
 use std::process::Command;
 use tauri::Manager;
 use walkdir::WalkDir;
@@ -152,6 +153,17 @@ struct Payload {
 }
 
 #[tauri::command]
+pub async fn analyze_file(
+  app_handle: &tauri::AppHandle,
+  path_dir: String,
+) -> Result<Value, std::io::Error> {
+  let mut output_path = app_handle.path_resolver().app_data_dir().unwrap();
+  output_path.push("extractor_music.temp.json");
+
+  extractor_music(path_dir, output_path.to_string_lossy().to_string()).await
+}
+
+#[tauri::command]
 pub async fn scan_directory(
   app_handle: tauri::AppHandle,
   path_dir: String,
@@ -188,10 +200,7 @@ pub async fn scan_directory(
           None => return Err(format!("Invalid file name: {:?}", path_file.file_name())),
         };
 
-        let mut output_path = app_handle.path_resolver().app_data_dir().unwrap();
-        output_path.push("extractor_music.temp.json");
-
-        match extractor_music(path.clone(), output_path.to_string_lossy().to_string()).await {
+        match analyze_file(&app_handle, path.clone()).await {
           Ok(output) => {
             match state
               .prisma_client
@@ -201,6 +210,9 @@ pub async fn scan_directory(
                 last_part.to_string(),
                 directory::path::equals(path_dir_string.clone()),
                 output["rhythm"]["bpm"].as_f64().unwrap(),
+                output["rhythm"]["danceability"].as_f64().unwrap(),
+                output["tonal"]["chords_key"].as_str().unwrap().to_owned(),
+                output["tonal"]["chords_scale"].as_str().unwrap().to_owned(),
                 vec![],
               )
               .exec()

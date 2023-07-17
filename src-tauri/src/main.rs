@@ -51,7 +51,6 @@ async fn main() {
       cmds::scan_directory,
       cmds::get_directory_files,
       cmds::open_in_finder,
-      // cmds::test_bin,
     ])
     .menu(tauri::Menu::os_default(&context.package_info().name))
     .run(context)

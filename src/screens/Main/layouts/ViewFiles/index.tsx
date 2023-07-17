@@ -58,6 +58,9 @@ const ViewFiles: Component = () => {
           <tr>
             <th>Name</th>
             <th>BPM</th>
+            <th>Danceability</th>
+            <th>Chords Key</th>
+            <th>Chords Scale</th>
             <th></th>
           </tr>
         </thead>
@@ -92,6 +95,9 @@ const ViewFiles: Component = () => {
                   >
                     <td>{file.name}</td>
                     <td>{file.bpm}</td>
+                    <td>{file.danceability}</td>
+                    <td>{file.chordsKey}</td>
+                    <td>{file.chordsScale}</td>
                     <td class="text-right">
                       <button
                         onClick={[openInFinder, file.path]}

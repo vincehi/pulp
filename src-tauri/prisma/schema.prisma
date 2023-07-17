@@ -26,4 +26,7 @@ model File {
   directory     Directory @relation(fields: [directoryPath], references: [path])
   directoryPath String
   bpm           Float
+  danceability  Float
+  chordsKey     String
+  chordsScale   String
 }
