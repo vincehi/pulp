@@ -146,12 +146,6 @@ pub async fn open_in_finder(path: String) {
   }
 }
 
-#[derive(Clone, serde::Serialize)]
-struct Payload {
-  processing: bool,
-  directory_path: String,
-}
-
 #[tauri::command]
 pub async fn analyze_file(
   app_handle: &tauri::AppHandle,
@@ -161,6 +155,12 @@ pub async fn analyze_file(
   output_path.push("extractor_music.temp.json");
 
   extractor_music(path_dir, output_path.to_string_lossy().to_string()).await
+}
+
+#[derive(Clone, serde::Serialize)]
+struct Payload {
+  processing: bool,
+  file: Option<String>,
 }
 
 #[tauri::command]
@@ -181,16 +181,6 @@ pub async fn scan_directory(
 
   let mut result = Vec::with_capacity(walk_dir.len());
 
-  app_handle
-    .emit_all(
-      "event-walk-directory",
-      Payload {
-        processing: true,
-        directory_path: path_dir_string.clone(),
-      },
-    )
-    .unwrap();
-
   for path_file in walk_dir {
     if let Some(ext) = path_file.path().extension() {
       if ext == "wav" || ext == "mp3" {
@@ -199,6 +189,16 @@ pub async fn scan_directory(
           Some(s) => s.to_string(),
           None => return Err(format!("Invalid file name: {:?}", path_file.file_name())),
         };
+
+        app_handle
+          .emit_all(
+            "event-walk-directory",
+            Payload {
+              processing: true,
+              file: Some(last_part.clone()),
+            },
+          )
+          .unwrap();
 
         match analyze_file(&app_handle, path.clone()).await {
           Ok(output) => {
@@ -231,7 +231,7 @@ pub async fn scan_directory(
               }
             }
           }
-          Err(error) => println!("Erreur : {:?}", error),
+          Err(error) => return Err(format!("Erreur : {:?}", error)),
         }
       }
     }
@@ -242,7 +242,7 @@ pub async fn scan_directory(
       "event-walk-directory",
       Payload {
         processing: false,
-        directory_path: path_dir_string.clone(),
+        file: None,
       },
     )
     .unwrap();

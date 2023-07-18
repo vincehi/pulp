@@ -4,12 +4,12 @@ import { createStore } from "solid-js/store";
 
 interface Payload {
   processing: boolean;
-  directory_path: string;
+  file: string;
 }
 
 interface WalkDirhState {
-  pathDirectory: string | null;
   processing: boolean;
+  file: string | null;
 }
 
 interface WalkDirActions {
@@ -21,7 +21,7 @@ type WalkDirStore = [WalkDirhState, WalkDirActions];
 const WalkDirContext = createContext<WalkDirStore>();
 
 const initialWalkDirhState: WalkDirhState = {
-  pathDirectory: null,
+  file: null,
   processing: false,
 };
 export const WalkDirProvider: Component<{ children: JSX.Element }> = (
@@ -33,7 +33,7 @@ export const WalkDirProvider: Component<{ children: JSX.Element }> = (
     await listen<Payload>("event-walk-directory", ({ payload }) => {
       setEventWalkDir({
         processing: payload.processing,
-        pathDirectory: payload.directory_path,
+        file: payload.file,
       });
     });
   })();
@@ -50,6 +50,22 @@ export const WalkDirProvider: Component<{ children: JSX.Element }> = (
   return (
     <WalkDirContext.Provider value={walkDirStore}>
       {props.children}
+      <input
+        type="checkbox"
+        id="my_modal_6"
+        class="modal-toggle"
+        checked={eventWalkDir.processing}
+      />
+      <div class="modal">
+        <div class="modal-box">
+          <h3 class="font-bold text-lg">File analysis</h3>
+          <div class="py-4 flex items-center">
+            <span class="loading loading-ring loading-xs shrink-0 mr-2" />
+            {eventWalkDir.file}
+          </div>
+          <small class="py-4">Please be patient, this may take some time</small>
+        </div>
+      </div>
     </WalkDirContext.Provider>
   );
 };
