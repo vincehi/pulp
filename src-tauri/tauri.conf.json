@@ -12,6 +12,15 @@
   },
   "tauri": {
     "allowlist": {
+      "shell": {
+        "sidecar": true,
+        "scope": [
+          {
+            "name": "binaries/streaming_extractor_music",
+            "sidecar": true
+          }
+        ]
+      },
       "all": true,
       "fs": {
         "all": true,
@@ -44,7 +53,9 @@
       "deb": {
         "depends": []
       },
-      "externalBin": [],
+      "externalBin": [
+        "binaries/streaming_extractor_music"
+      ],
       "icon": [
         "icons/32x32.png",
         "icons/128x128.png",
