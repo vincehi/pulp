@@ -4,7 +4,7 @@
   "version": "0.0.0-development",
   "scripts": {
     "prisma-studio": "(cd src-tauri && npx prisma studio)",
-    "prisma-generate-rust": "(cd src-tauri && cargo prisma generate)",
+    "prisma-generate-rust": "npm run cargo -- prisma generate",
     "cargo": "func() { (cd src-tauri && cargo \"$@\"); }; func",
     "prisma-prepare-schema-js": "node -r dotenv/config tools/prisma-prepare-schema.js src-tauri/prisma/schema.prisma dotenv_config_path=src-tauri/.env",
     "prisma-js": "npm run prisma-prepare-schema-js && npx prisma --",

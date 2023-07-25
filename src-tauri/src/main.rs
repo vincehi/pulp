@@ -34,10 +34,10 @@ async fn main() {
         .await
         .unwrap();
 
-        #[cfg(debug_assertions)]
+        // #[cfg(debug_assertions)]
         prisma_client._db_push().await.unwrap();
-        #[cfg(not(debug_assertions))]
-        prisma_client._migrate_deploy().await.unwrap();
+        // #[cfg(not(debug_assertions))]
+        // prisma_client._migrate_deploy().await.unwrap();
 
         handle.manage(AppState { prisma_client })
       });
