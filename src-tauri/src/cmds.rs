@@ -1,8 +1,10 @@
 use crate::prisma_main_client::{directory, file};
 use crate::utils::app::AppState;
+use crate::utils::extractor_music::extractor_music;
 use prisma_client_rust::and;
 use prisma_client_rust::operator::or;
 use prisma_client_rust::prisma_errors::query_engine::UniqueKeyViolation;
+use serde_json::Value;
 use std::process::Command;
 use tauri::Manager;
 use walkdir::WalkDir;
@@ -144,10 +146,21 @@ pub async fn open_in_finder(path: String) {
   }
 }
 
+#[tauri::command]
+pub async fn analyze_file(
+  app_handle: &tauri::AppHandle,
+  path_dir: String,
+) -> Result<Value, std::io::Error> {
+  let mut output_path = app_handle.path_resolver().app_data_dir().unwrap();
+  output_path.push("extractor_music.temp.json");
+
+  extractor_music(path_dir, output_path.to_string_lossy().to_string()).await
+}
+
 #[derive(Clone, serde::Serialize)]
 struct Payload {
   processing: bool,
-  directory_path: String,
+  file: Option<String>,
 }
 
 #[tauri::command]
@@ -168,16 +181,6 @@ pub async fn scan_directory(
 
   let mut result = Vec::with_capacity(walk_dir.len());
 
-  app_handle
-    .emit_all(
-      "event-walk-directory",
-      Payload {
-        processing: true,
-        directory_path: path_dir_string.clone(),
-      },
-    )
-    .unwrap();
-
   for path_file in walk_dir {
     if let Some(ext) = path_file.path().extension() {
       if ext == "wav" || ext == "mp3" {
@@ -187,29 +190,48 @@ pub async fn scan_directory(
           None => return Err(format!("Invalid file name: {:?}", path_file.file_name())),
         };
 
-        match state
-          .prisma_client
-          .file()
-          .create(
-            path,
-            last_part.to_string(),
-            directory::path::equals(path_dir_string.clone()),
-            vec![],
+        app_handle
+          .emit_all(
+            "event-walk-directory",
+            Payload {
+              processing: true,
+              file: Some(last_part.clone()),
+            },
           )
-          .exec()
-          .await
-        {
-          Ok(file) => result.push(file),
-          Err(error) if error.is_prisma_error::<UniqueKeyViolation>() => {
-            return Err(format!("File already exists: {}", last_part))
+          .unwrap();
+
+        match analyze_file(&app_handle, path.clone()).await {
+          Ok(output) => {
+            match state
+              .prisma_client
+              .file()
+              .create(
+                path,
+                last_part.to_string(),
+                directory::path::equals(path_dir_string.clone()),
+                output["rhythm"]["bpm"].as_f64().unwrap(),
+                output["rhythm"]["danceability"].as_f64().unwrap(),
+                output["tonal"]["chords_key"].as_str().unwrap().to_owned(),
+                output["tonal"]["chords_scale"].as_str().unwrap().to_owned(),
+                vec![],
+              )
+              .exec()
+              .await
+            {
+              Ok(file) => result.push(file),
+              Err(error) if error.is_prisma_error::<UniqueKeyViolation>() => {
+                return Err(format!("File already exists: {}", last_part))
+              }
+              Err(error) => {
+                return Err(format!(
+                  "Error creating file '{}': {}",
+                  last_part,
+                  error.to_string()
+                ))
+              }
+            }
           }
-          Err(error) => {
-            return Err(format!(
-              "Error creating file '{}': {}",
-              last_part,
-              error.to_string()
-            ))
-          }
+          Err(error) => return Err(format!("Erreur : {:?}", error)),
         }
       }
     }
@@ -220,7 +242,7 @@ pub async fn scan_directory(
       "event-walk-directory",
       Payload {
         processing: false,
-        directory_path: path_dir_string.clone(),
+        file: None,
       },
     )
     .unwrap();

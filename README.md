@@ -12,7 +12,7 @@ to being an audio sample management tool, Pulp is also an audio file explorer.
 ## Features
 
 - Scan a folder and retrieve audio files
-- Automatically detect the audio key of each file
+- Automatic detection of BPM, key, etc.
 - Easily organize and search your audio files
 - Modern and user-friendly interface
 
@@ -63,23 +63,9 @@ repository for more information on contribution processes.
 
 ## Acknowledgements
 
+This project utilizes Essentia, an open source audio analysis and processing library. We would like to express our
+gratitude to the Essentia development team for their contributions to the field of audio processing. For more
+information about Essentia, please visit their [official website](https://essentia.upf.edu/).
+
 We would like to thank all contributors for their support and help in developing Pulp. We couldn't have done it without
 you.
-
-## More
-
-- https://github.com/katspaugh/wavesurfer.js
-- https://github.com/goldfire/howler.js
-- https://crates.io/crates/fon
-- https://github.com/mbenja/tauri-todo-app/tree/main/app
-- https://github.com/lukethacoder/tauri-react-example
-- https://github.com/rfdonnelly/tauri-async-example/blob/main/src-tauri/src/main.rs
-- https://prisma.brendonovich.dev/writing-data/create
-- https://github.com/Brendonovich/prisma-client-rust/blob/main/examples/actix/src/main.rs
-- https://tauri.app/v1/api/config
-- https://docs.rs/tauri/1.2.1/tauri/macro.generate_handler.html
-- https://www.prisma.io/docs/reference/api-reference/prisma-client-reference#create
-
-## Machine learning
-
-- https://essentia.upf.edu/machine_learning.html and model https://essentia.upf.edu/models.html
