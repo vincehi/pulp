@@ -116,6 +116,7 @@ const FilesTable: Component = () => {
       return files()?.metadata.total_count;
     },
     overscan: 10,
+    enableSmoothScroll: true,
     estimateSize: () => 45,
     getItemKey: (index) => table.getRowModel().rows[index]?.id,
     // debug: true,
@@ -131,10 +132,11 @@ const FilesTable: Component = () => {
     }
   });
 
+  createEffect(() => console.log(bodyTableRef()));
+
   // const paddingTop = () =>
   //   rowVirtualizer.getVirtualItems().length > 0
   //     ? rowVirtualizer.getVirtualItems()?.[0].start || 0
-  //     : 0;
   //
   // const paddingBottom = () =>
   //   rowVirtualizer.getVirtualItems().length > 0
@@ -145,9 +147,9 @@ const FilesTable: Component = () => {
   //     : 0;
 
   return (
-    <div ref={setBodyTableRef} class="files relative overflow-x-auto shadow-md">
+    <div class="files shadow-md">
       {/* thead */}
-      <div class="sticky top-0 bg-base-100 z-10">
+      <div class=" top-0 bg-base-100 z-10">
         <For each={table.getHeaderGroups()}>
           {(headerGroup) => (
             /* tr */
@@ -184,55 +186,65 @@ const FilesTable: Component = () => {
       </div>
       {/* tbody */}
       <div
+        ref={setBodyTableRef}
         style={{
-          height: `${rowVirtualizer.getTotalSize()}px`,
-          width: "100%",
           position: "relative",
+          "overflow-x": "auto",
+          height: "calc(100% - 30px)",
         }}
       >
-        <For each={rowVirtualizer.getVirtualItems()}>
-          {(virtualRow) => {
-            const row = () => table.getRowModel().rows[virtualRow.index];
-            return (
-              /* tr */
-              <div
-                data-index={virtualRow.index}
-                style={{
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  transform: `translateY(${virtualRow.start}px)`,
-                  height: `${virtualRow.size}px`,
-                }}
-                // onClick={(event): void => {
-                //   event.currentTarget.focus();
-                // }}
-                // onFocus={[actions.setPathSelected, row?.original.path]}
-                // tabIndex={0}
-                // classList={{
-                //   "bg-base-200": store.pathSelected === row?.original.path,
-                // }}
-              >
-                <For each={row()?.getVisibleCells() || []}>
-                  {(cell) => {
-                    return (
-                      /* td */
-                      <div
-                        style={{ width: `${cell.column.getSize()}px` }}
-                        class="overflow-hidden inline-block"
-                      >
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
-                      </div>
-                    );
-                  }}
-                </For>
-              </div>
-            );
+        <div
+          style={{
+            height: `${rowVirtualizer.getTotalSize()}px`,
+            width: "100%",
+            "padding-top": `${rowVirtualizer.getVirtualItems()[0]?.start}px`,
           }}
-        </For>
+        >
+          {console.log(rowVirtualizer.getVirtualItems()[0]?.start)}
+          <For each={rowVirtualizer.getVirtualItems()}>
+            {(virtualRow) => {
+              const row = () => table.getRowModel().rows[virtualRow.index];
+              return (
+                /* tr */
+                <div
+                  data-index={virtualRow.index}
+                  style={{
+                    //   position: "absolute",
+                    //   top: 0,
+                    //   left: 0,
+                    //   transform: `translateY(${virtualRow.start}px)`,
+                    height: `${virtualRow.size}px`,
+                  }}
+                  // onClick={(event): void => {
+                  //   event.currentTarget.focus();
+                  // }}
+                  // onFocus={[actions.setPathSelected, row?.original.path]}
+                  // tabIndex={0}
+                  // classList={{
+                  //   "bg-base-200": store.pathSelected === row?.original.path,
+                  // }}
+                >
+                  <For each={row()?.getVisibleCells() || []}>
+                    {(cell) => {
+                      return (
+                        /* td */
+                        <div
+                          style={{ width: `${cell.column.getSize()}px` }}
+                          class="overflow-hidden inline-block"
+                        >
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </div>
+                      );
+                    }}
+                  </For>
+                </div>
+              );
+            }}
+          </For>
+        </div>
       </div>
     </div>
   );
