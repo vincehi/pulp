@@ -75,30 +75,56 @@ pub async fn get_all_directories(
   };
 }
 
+#[derive(serde::Serialize)]
+pub struct QueryResult {
+  contents: Vec<file::Data>,
+  metadata: Metadata,
+}
+
+#[derive(serde::Serialize)]
+pub struct Metadata {
+  total_count: i64,
+}
+
 #[tauri::command]
 pub async fn get_directory_files(
   paths: Vec<String>,
   search: String,
+  cursor_path: Option<String>,
   state: tauri::State<'_, AppState>,
-) -> Result<Vec<file::Data>, String> {
-  return match state
+) -> Result<QueryResult, String> {
+  let result = state
     .prisma_client
-    .file()
-    .find_many(vec![
-      or(
-        paths
-          .into_iter()
-          .map(|path| file::path::starts_with(path))
-          .collect(),
-      ),
-      and![file::name::contains(search.to_string())],
-    ])
-    .exec()
+    ._transaction()
+    .run(|tx| async move {
+      let file_where = vec![
+        or(
+          paths
+            .into_iter()
+            .map(|path| file::path::starts_with(path))
+            .collect(),
+        ),
+        and![file::name::contains(search.to_string())],
+      ];
+
+      let mut query = tx.file().find_many(file_where.clone().to_vec());
+
+      if let Some(path) = cursor_path {
+        query = query.cursor(file::path::equals(path)).skip(1);
+      }
+
+      let total_count = tx.file().count(file_where.clone().to_vec()).exec().await?;
+
+      query.take(20).exec().await.map(|files| {
+        (QueryResult {
+          contents: files,
+          metadata: (Metadata { total_count }),
+        })
+      })
+    })
     .await
-  {
-    Ok(files) => Ok(files),
-    Err(e) => Err(e.to_string()),
-  };
+    .map_err(|e| e.to_string())?;
+  Ok(result)
 }
 
 #[tauri::command]

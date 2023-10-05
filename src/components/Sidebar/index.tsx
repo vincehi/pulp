@@ -1,6 +1,6 @@
-import AddDirectories from "@/components/AddDirectories";
-import Tree from "@/components/Tree";
-import TreeProvider from "@/providers/TreeProvider";
+import AddDirectories from "./components/AddDirectories";
+import Tree from "./components/Tree";
+import TreeProvider from "@/components/Sidebar/components/Tree/provider";
 import { type Component } from "solid-js";
 
 const Sidebar: Component = () => {

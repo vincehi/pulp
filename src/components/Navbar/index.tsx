@@ -1,6 +1,6 @@
 import { type Component } from "solid-js";
 import { useSearch } from "@/providers/SearchProvider";
-import iconUrl from "../../../../assets/icon.png";
+import iconUrl from "../../assets/icon.png";
 
 const Navbar: Component = () => {
   const [store, actions] = useSearch();

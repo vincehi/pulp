@@ -1,8 +1,8 @@
 import type { Component } from "solid-js";
 import { SearchProvider } from "./providers/SearchProvider";
-import Navbar from "./screens/Main/layouts/Navbar";
-import Sidebar from "./screens/Main/layouts/Sidebar";
-import ViewFiles from "./screens/Main/layouts/ViewFiles";
+import Navbar from "./components/Navbar";
+import Sidebar from "./components/Sidebar";
+import FilesTable from "./components/FilesTable";
 import WavePlayer from "@/components/WavePlayer";
 import { WalkDirProvider } from "@/providers/WalkDir";
 
@@ -12,7 +12,7 @@ const App: Component = () => {
       <SearchProvider>
         <Navbar />
         <Sidebar />
-        <ViewFiles />
+        <FilesTable />
         <WavePlayer />
       </SearchProvider>
     </WalkDirProvider>
