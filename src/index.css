@@ -56,7 +56,7 @@ body {
 }
 
 .files {
-    overflow: scroll;
+    /*overflow: scroll;*/
     grid-area: files;
 }
 
@@ -90,3 +90,6 @@ th:hover .resizer {
     opacity: 1;
 }
 
+.hide-scrollbar::-webkit-scrollbar {
+    display: none;
+}

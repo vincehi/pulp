@@ -1,6 +1,6 @@
 import { type SearchState, useSearch } from "@/providers/SearchProvider";
 import { invoke } from "@tauri-apps/api";
-import { flatMap, isEmpty, last, some, startsWith } from "lodash-es";
+import { flatMap, last, some, startsWith } from "lodash-es";
 import {
   type Component,
   type ResourceFetcher,
@@ -9,7 +9,6 @@ import {
   For,
   createSignal,
   createEffect,
-  onMount,
 } from "solid-js";
 import { type File } from "@prisma/client";
 import {
@@ -17,7 +16,7 @@ import {
   getCoreRowModel,
   flexRender,
 } from "@tanstack/solid-table";
-import { useInfiniteScroll } from "solidjs-use";
+import { useScroll } from "solidjs-use";
 import { filesTableColumns } from "@/components/FilesTable/columns";
 import { createVirtualizer } from "@tanstack/solid-virtual";
 
@@ -81,22 +80,6 @@ const FilesTable: Component = () => {
 
   const [bodyTableRef, setBodyTableRef] = createSignal<HTMLElement>();
 
-  // useInfiniteScroll(
-  //   bodyTableRef,
-  //   () => {
-  //     const fileContents = files()?.contents;
-  //     const fileMetadata = files()?.metadata;
-  //     if (
-  //       fileContents != null &&
-  //       fileMetadata != null &&
-  //       fileContents.length < fileMetadata.total_count
-  //     ) {
-  //       void refetch();
-  //     }
-  //   },
-  //   { distance: 100, interval: 1000 }
-  // );
-
   const table = createSolidTable({
     get data() {
       return files()?.contents ?? [];
@@ -104,10 +87,6 @@ const FilesTable: Component = () => {
     columns: filesTableColumns,
     getCoreRowModel: getCoreRowModel(),
     columnResizeMode: "onChange",
-    getRowId: (originalRow, index, parent) => {
-      // console.log(originalRow);
-      return originalRow.path;
-    },
   });
 
   const rowVirtualizer = createVirtualizer({
@@ -116,10 +95,17 @@ const FilesTable: Component = () => {
       return files()?.metadata.total_count;
     },
     overscan: 10,
-    enableSmoothScroll: true,
+    enableSmoothScroll: false,
     estimateSize: () => 45,
-    getItemKey: (index) => table.getRowModel().rows[index]?.id,
-    // debug: true,
+  });
+
+  const { x, y } = useScroll<HTMLElement>(bodyTableRef);
+
+  const [elHeader, setElHeader] = createSignal<HTMLElement>();
+  const { setX } = useScroll(elHeader);
+
+  createEffect(() => {
+    setX(x());
   });
 
   createEffect(() => {
@@ -132,28 +118,20 @@ const FilesTable: Component = () => {
     }
   });
 
-  createEffect(() => console.log(bodyTableRef()));
-
-  // const paddingTop = () =>
-  //   rowVirtualizer.getVirtualItems().length > 0
-  //     ? rowVirtualizer.getVirtualItems()?.[0].start || 0
-  //
-  // const paddingBottom = () =>
-  //   rowVirtualizer.getVirtualItems().length > 0
-  //     ? rowVirtualizer.getTotalSize() -
-  //       (rowVirtualizer.getVirtualItems()?.[
-  //         rowVirtualizer.getVirtualItems().length - 1
-  //       ].end || 0)
-  //     : 0;
-
   return (
-    <div class="files shadow-md">
+    <div class="files overflow-hidden shadow-md">
       {/* thead */}
-      <div class=" top-0 bg-base-100 z-10">
+      <div
+        ref={setElHeader}
+        class="flex hide-scrollbar overflow-auto top-0 bg-base-100 z-10"
+        style={{
+          height: "25px",
+        }}
+      >
         <For each={table.getHeaderGroups()}>
           {(headerGroup) => (
             /* tr */
-            <div>
+            <div class="flex">
               <For each={headerGroup.headers}>
                 {(header) => {
                   return (
@@ -187,65 +165,66 @@ const FilesTable: Component = () => {
       {/* tbody */}
       <div
         ref={setBodyTableRef}
-        style={{
-          position: "relative",
-          "overflow-x": "auto",
-          height: "calc(100% - 30px)",
-        }}
+        style={{ height: "calc(100% - 25px)", overflow: "scroll" }}
       >
         <div
           style={{
+            position: "relative",
             height: `${rowVirtualizer.getTotalSize()}px`,
             width: "100%",
-            "padding-top": `${rowVirtualizer.getVirtualItems()[0]?.start}px`,
           }}
         >
-          {console.log(rowVirtualizer.getVirtualItems()[0]?.start)}
           <For each={rowVirtualizer.getVirtualItems()}>
             {(virtualRow) => {
-              const row = () => table.getRowModel().rows[virtualRow.index];
               return (
-                /* tr */
-                <div
-                  data-index={virtualRow.index}
-                  style={{
-                    //   position: "absolute",
-                    //   top: 0,
-                    //   left: 0,
-                    //   transform: `translateY(${virtualRow.start}px)`,
-                    height: `${virtualRow.size}px`,
-                  }}
-                  // onClick={(event): void => {
-                  //   event.currentTarget.focus();
-                  // }}
-                  // onFocus={[actions.setPathSelected, row?.original.path]}
-                  // tabIndex={0}
-                  // classList={{
-                  //   "bg-base-200": store.pathSelected === row?.original.path,
-                  // }}
-                >
-                  <For each={row()?.getVisibleCells() || []}>
-                    {(cell) => {
-                      return (
-                        /* td */
-                        <div
-                          style={{ width: `${cell.column.getSize()}px` }}
-                          class="overflow-hidden inline-block"
-                        >
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext()
-                          )}
-                        </div>
-                      );
-                    }}
-                  </For>
-                </div>
+                <TableRow
+                  virtualRow={virtualRow}
+                  tableRow={table.getRowModel().rows[virtualRow.index]}
+                />
               );
             }}
           </For>
         </div>
       </div>
+    </div>
+  );
+};
+
+const TableRow = (props) => {
+  const [store, actions] = useSearch();
+  return (
+    <div
+      data-index={props.virtualRow.index}
+      style={{
+        position: "absolute",
+        top: 0,
+        left: 0,
+        transform: `translateY(${props.virtualRow.start}px)`,
+        height: `${props.virtualRow.size}px`,
+        display: "flex",
+        "flex-wrap": "nowrap",
+      }}
+      onClick={(event): void => {
+        event.currentTarget.focus();
+      }}
+      onFocus={[actions.setPathSelected, props.tableRow?.original.path]}
+      tabIndex={0}
+      classList={{
+        "bg-base-200": store.pathSelected === props.tableRow?.original.path,
+      }}
+    >
+      <For each={props.tableRow?.getVisibleCells() || []}>
+        {(cell) => {
+          return (
+            <div
+              style={{ width: `${cell.column.getSize()}px` }}
+              class="overflow-hidden inline-block"
+            >
+              {flexRender(cell.column.columnDef.cell, cell.getContext())}
+            </div>
+          );
+        }}
+      </For>
     </div>
   );
 };
