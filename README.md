@@ -1,5 +1,19 @@
 <div align="center" style="text-align: center"><img src="https://raw.githubusercontent.com/bazalp/pulp/main/icons/icon-test.png" width="80" alt="pulp logo"/></div>
 
+<hr />
+
+<p align="center">
+  <a href="https://github.com//bazalp/pulp/releases/latest">
+    🔗 Go to Download Page
+  </a>
+  &nbsp; | &nbsp; Give it a Star ⭐ | &nbsp;
+  <a href="https://www.linkedin.com/in/vincentsourice/">
+    Share it on Linkedin 👋
+  </a>
+</p>
+
+<hr />
+
 # Pulp - Open Source Audio Sample Manager
 
 Pulp is an open source alternative
