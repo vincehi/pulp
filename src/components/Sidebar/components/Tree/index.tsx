@@ -1,4 +1,4 @@
-import { type MappedDirectory } from "@/providers/TreeProvider";
+import { type MappedDirectory } from "@/components/Sidebar/components/Tree/provider";
 import { Icon } from "solid-heroicons";
 import { folder } from "solid-heroicons/outline";
 import { For, Show, type Component } from "solid-js";

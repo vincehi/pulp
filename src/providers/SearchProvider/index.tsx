@@ -18,7 +18,7 @@ interface Collapsed {
   collapsed: string[];
 }
 
-interface SearchState {
+export interface SearchState {
   collapsed: Collapsed[];
   search: string;
   pathSelected: string;
