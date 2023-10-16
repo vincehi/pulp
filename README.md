@@ -1,7 +1,5 @@
 <div align="center" style="text-align: center"><img src="https://raw.githubusercontent.com/bazalp/pulp/main/icons/icon-test.png" width="80" alt="pulp logo"/></div>
 
-<hr />
-
 <p align="center">
   <a href="https://github.com//bazalp/pulp/releases/latest">
     🔗 Go to Download Page
