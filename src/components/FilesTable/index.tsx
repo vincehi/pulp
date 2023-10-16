@@ -150,7 +150,7 @@ const FilesTable: Component = () => {
     const virtualItems = rowVirtualizer.getVirtualItems();
     if (
       last<any>(virtualItems)?.index >= table.getRowModel().rows.length &&
-      table.getRowModel().rows.length < files()?.metadata.total_count
+      table.getRowModel().rows.length < files()?.metadata.total_count!
     ) {
       void refetch();
     }
