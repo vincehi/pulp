@@ -10,7 +10,7 @@ import {
 } from "solid-js";
 import { produce } from "solid-js/store";
 import { Dynamic } from "solid-js/web";
-import { useSearch } from "../SearchProvider";
+import { useSearch } from "@/providers/SearchProvider";
 
 export interface MappedDirectory extends Directory {
   readonly isCollapsed: boolean;

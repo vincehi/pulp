@@ -47,9 +47,9 @@ const WavePlayer: Component = () => {
   createEffect(() => {
     const file = store.pathSelected;
     if (file !== "") {
-      wavesurfer.load(convertFileSrc(file));
+      void wavesurfer.load(convertFileSrc(file));
     }
-  }, []);
+  });
 
   const handlePlayPause = (event: Event): void => {
     event.preventDefault();
