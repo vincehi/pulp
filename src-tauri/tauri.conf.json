@@ -44,6 +44,9 @@
         "all": true,
         "writeText": true,
         "readText": true
+      },
+      "notification": {
+        "all": true
       }
     },
     "bundle": {

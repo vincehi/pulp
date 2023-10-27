@@ -7,8 +7,9 @@ datasource db {
 }
 
 generator client {
-  provider = "cargo prisma"
-  output   = "../src/prisma_main_client.rs"
+  provider    = "cargo prisma"
+  output      = "../src/prisma_main_client.rs"
+  module_path = "prisma_main_client"
 }
 
 model Directory {
@@ -25,8 +26,9 @@ model File {
   name          String
   directory     Directory @relation(fields: [directoryPath], references: [path])
   directoryPath String
-  bpm           Float
-  danceability  Float
-  chordsKey     String
-  chordsScale   String
+  bpm           Float?
+  danceability  Float?
+  chordsKey     String?
+  chordsScale   String?
+  analyzed      Boolean   @default(false)
 }

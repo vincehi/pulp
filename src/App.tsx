@@ -4,18 +4,20 @@ import Navbar from "./components/Navbar";
 import Sidebar from "./components/Sidebar";
 import FilesTable from "./components/FilesTable";
 import WavePlayer from "@/components/WavePlayer";
-import { WalkDirProvider } from "@/providers/WalkDir";
+import AnalyzeFilesModal from "@/components/AnalyzeFilesModal";
+import { AnalyzeFileProvider } from "@/providers/AnalyzeDirectoryFiles";
 
 const App: Component = () => {
   return (
-    <WalkDirProvider>
+    <AnalyzeFileProvider>
+      <AnalyzeFilesModal />
       <SearchProvider>
         <Navbar />
         <Sidebar />
         <FilesTable />
         <WavePlayer />
       </SearchProvider>
-    </WalkDirProvider>
+    </AnalyzeFileProvider>
   );
 };
 

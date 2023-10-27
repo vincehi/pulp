@@ -9,9 +9,13 @@ CREATE TABLE "Directory" (
 
 -- CreateTable
 CREATE TABLE "File" (
-    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    "path" TEXT NOT NULL,
+    "path" TEXT NOT NULL PRIMARY KEY,
     "name" TEXT NOT NULL,
     "directoryPath" TEXT NOT NULL,
+    "bpm" REAL,
+    "danceability" REAL,
+    "chordsKey" TEXT,
+    "chordsScale" TEXT,
+    "analyzed" BOOLEAN NOT NULL DEFAULT false,
     CONSTRAINT "File_directoryPath_fkey" FOREIGN KEY ("directoryPath") REFERENCES "Directory" ("path") ON DELETE RESTRICT ON UPDATE CASCADE
 );

@@ -4,6 +4,7 @@ import { type File } from "@prisma/client";
 import { Icon } from "solid-heroicons";
 import { magnifyingGlass } from "solid-heroicons/solid";
 import { tauri } from "@tauri-apps/api";
+import { isNumber, round } from "lodash-es";
 
 async function openInFinder(path: string, event: Event): Promise<void> {
   event.preventDefault();
@@ -29,7 +30,7 @@ export const filesTableColumns: Array<ColumnDef<File>> = [
     header: "BPM",
     cell: (info) => {
       const value = info.getValue() as number;
-      return value === 0 ? "-" : Math.round(value);
+      return isNumber(value) ? round(value, 0) : "-";
     },
   },
   {
@@ -37,18 +38,18 @@ export const filesTableColumns: Array<ColumnDef<File>> = [
     header: "Danceability",
     cell: (info) => {
       const value = info.getValue() as number;
-      return value === 0 ? "-" : value.toFixed(2);
+      return isNumber(value) ? round(value, 2) : "-";
     },
   },
   {
     accessorKey: "chordsKey",
     header: "Chords Key",
-    cell: (info) => info.getValue(),
+    cell: (info) => info.getValue() ?? "-",
   },
   {
     accessorKey: "chordsScale",
     header: "Chords Scale",
-    cell: (info) => info.getValue(),
+    cell: (info) => info.getValue() ?? "-",
   },
   {
     accessorKey: "show",

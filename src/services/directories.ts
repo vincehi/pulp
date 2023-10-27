@@ -72,3 +72,17 @@ export const scanDirectory = async (pathDir: string): Promise<void> => {
     });
   }
 };
+
+export const analyzeDirectory = async (pathDir: string): Promise<unknown> => {
+  console.log("analyzeDirectory");
+  try {
+    return await invoke("analyze_directory", {
+      pathDir,
+    });
+  } catch (error) {
+    throw new CustomError(error as string, {
+      title: "Analyze directory",
+      type: "error",
+    });
+  }
+};
