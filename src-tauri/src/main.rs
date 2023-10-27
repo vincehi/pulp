@@ -49,6 +49,7 @@ async fn main() {
       cmds::create_directory,
       cmds::delete_directory,
       cmds::scan_directory,
+      cmds::analyze_directory,
       cmds::get_directory_files,
       cmds::open_in_finder,
     ])
