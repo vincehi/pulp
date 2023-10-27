@@ -14,11 +14,6 @@ import {
   deleteDirectory,
   scanDirectory,
 } from "@/services/directories";
-import {
-  isPermissionGranted,
-  requestPermission,
-  sendNotification,
-} from "@tauri-apps/api/notification";
 
 const ActionsDirectory: Component<{
   directory: Directory;
@@ -88,20 +83,6 @@ const ActionsDirectory: Component<{
       if (response) {
         try {
           await analyzeDirectory(props.directory.path);
-
-          // if (resp === "success") {
-          //   let permissionGranted = await isPermissionGranted();
-          //   if (!permissionGranted) {
-          //     const permission = await requestPermission();
-          //     permissionGranted = permission === "granted";
-          //   }
-          //   if (permissionGranted) {
-          //     sendNotification({
-          //       title: "Pulp",
-          //       body: "File analysis is completed",
-          //     });
-          //   }
-          // }
         } catch (error) {
           if (error instanceof CustomError) {
             await message(error.message, error.options);
@@ -137,9 +118,7 @@ const ActionsDirectory: Component<{
 
       <button
         class="text-gray-500 hover:text-gray-900"
-        onClick={(event) => {
-          handleAnalyze(event);
-        }}
+        onClick={handleAnalyze}
         title={`Analyze ${props.directory.name}`}
       >
         <Icon path={beaker} class="w-4" />

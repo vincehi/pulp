@@ -117,11 +117,9 @@ pub async fn get_directory_files(
 
       let total_count = tx.file().count(file_where.clone().to_vec()).exec().await?;
 
-      query.take(20).exec().await.map(|files| {
-        (QueryResult {
-          contents: files,
-          metadata: (Metadata { total_count }),
-        })
+      query.take(20).exec().await.map(|files| QueryResult {
+        contents: files,
+        metadata: (Metadata { total_count }),
       })
     })
     .await
@@ -196,7 +194,7 @@ pub async fn analyze_directory(
   app_handle: tauri::AppHandle,
   path_dir: String,
   state: tauri::State<'_, AppState>,
-) -> Result<String, String> {
+) -> Result<(), String> {
   directory::include!((filter: Vec<file::WhereParam>) => directory_files {
       files(filter)
   });
@@ -290,7 +288,7 @@ pub async fn analyze_directory(
         )
         .unwrap();
 
-      Ok("success".to_string())
+      Ok(())
     }
     None => {
       return Err(format!("Error analyze file '{}'", path_dir));
