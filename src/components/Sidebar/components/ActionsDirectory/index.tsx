@@ -7,13 +7,8 @@ import {
   trash,
 } from "solid-heroicons/outline";
 import { type Component } from "solid-js";
-import {
-  analyzeDirectory,
-  createDirectory,
-  CustomError,
-  deleteDirectory,
-  scanDirectory,
-} from "@/services/directories";
+import directoryServices, { CustomError } from "@/services/directoryServices";
+import directoriesStore from "@/stores/directoriesStore";
 
 const ActionsDirectory: Component<{
   directory: Directory;
@@ -32,7 +27,7 @@ const ActionsDirectory: Component<{
         }
       );
       if (response) {
-        await deleteDirectory(props.directory.path);
+        await directoriesStore.deleteDirectory(props.directory.path);
       }
     })();
   };
@@ -52,10 +47,10 @@ const ActionsDirectory: Component<{
       );
       if (response) {
         try {
-          await deleteDirectory(props.directory.path);
-          await createDirectory(props.directory.path);
-          await scanDirectory(props.directory.path);
-          await analyzeDirectory(props.directory.path);
+          await directoriesStore.deleteDirectory(props.directory.path);
+          await directoriesStore.createDirectory(props.directory.path);
+          await directoryServices.scanDirectory(props.directory.path);
+          await directoryServices.analyzeDirectory(props.directory.path);
         } catch (error) {
           if (error instanceof CustomError) {
             await message(error.message, error.options);
@@ -82,7 +77,7 @@ const ActionsDirectory: Component<{
       );
       if (response) {
         try {
-          await analyzeDirectory(props.directory.path);
+          await directoryServices.analyzeDirectory(props.directory.path);
         } catch (error) {
           if (error instanceof CustomError) {
             await message(error.message, error.options);

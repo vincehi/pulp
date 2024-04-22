@@ -1,7 +1,13 @@
-import { directories, type Directory } from "@/services/directories";
+import { useSearch } from "@/providers/SearchProvider";
+import { type Directory } from "@/services/directoryServices";
+import {
+  default as directories,
+  default as directoriesStore,
+} from "@/stores/directoriesStore";
 import { readDir, type FileEntry } from "@tauri-apps/api/fs";
 import { remove, startsWith } from "lodash-es";
 import {
+  FlowComponent,
   createEffect,
   createResource,
   createSignal,
@@ -10,7 +16,6 @@ import {
 } from "solid-js";
 import { produce } from "solid-js/store";
 import { Dynamic } from "solid-js/web";
-import { useSearch } from "@/providers/SearchProvider";
 
 export interface MappedDirectory extends Directory {
   readonly isCollapsed: boolean;
@@ -18,43 +23,39 @@ export interface MappedDirectory extends Directory {
   toggleCollapseItem: () => void;
 }
 
-const TreeProvider: Component<{
-  children: Component<{
+const TreeProvider: FlowComponent<
+  {},
+  Component<{
     mapped: () => MappedDirectory[];
-  }>;
-}> = (props) => {
+  }>
+> = (props) => {
   const [store, { setCollapse }] = useSearch();
 
-  createEffect(() => {
-    setCollapse((prevCollapsed) => {
-      return directories.map((dir) => {
-        const dirPath = dir.path;
-        const currentCollapsed = prevCollapsed.find(({ rootDirectory }) =>
-          startsWith(dirPath, rootDirectory)
-        );
-        return {
-          rootDirectory: dirPath,
-          collapsed: currentCollapsed != null ? currentCollapsed.collapsed : [],
-        };
-      });
-    });
-  });
+  // createEffect(() => {
+  //   setCollapse((prevCollapsed) => {
+  //     return directories.data.map((dir) => {
+  //       const dirPath = dir.path;
+  //       const currentCollapsed = prevCollapsed.find(({ rootDirectory }) =>
+  //         startsWith(dirPath, rootDirectory)
+  //       );
+  //       return {
+  //         rootDirectory: dirPath,
+  //         collapsed: currentCollapsed != null ? currentCollapsed.collapsed : [],
+  //       };
+  //     });
+  //   });
+  // });
 
   const toggleCollapseItem = (itemPath: string, isCollapsed: boolean): void => {
     const itemPathSlash = itemPath + "/";
-    const index = store.collapsed.findIndex(({ rootDirectory }) =>
-      startsWith(itemPathSlash, rootDirectory)
-    );
+    const currentKey = directoriesStore.data.find((item) =>
+      startsWith(itemPathSlash, item.path)
+    ).path;
+
     switch (isCollapsed) {
       case true: {
-        // setCollapse(index, "collapsed", (items) => [
-        //   ...items.filter((path) => {
-        //     return itemPathSlash !== path && !startsWith(path, itemPathSlash);
-        //   }),
-        // ]);
         setCollapse(
-          index,
-          "collapsed",
+          currentKey,
           produce((items) => {
             remove(
               items,
@@ -66,11 +67,12 @@ const TreeProvider: Component<{
         break;
       }
       case false: {
-        setCollapse(
-          index,
-          "collapsed",
-          produce((items) => items.push(itemPathSlash))
-        );
+        setCollapse(currentKey, (items) => {
+          if (items) {
+            return [...items, itemPathSlash];
+          }
+          return [itemPathSlash];
+        });
         // setCollapse(index, "collapsed", (items) => [...items, itemPathSlash]);
         break;
       }
@@ -78,11 +80,13 @@ const TreeProvider: Component<{
   };
 
   const isCollapsed = (itemPath: string): boolean => {
+    const currentKey = Object.keys(store.collapsed).find((item) =>
+      startsWith(itemPath, item)
+    );
     return (
       Boolean(
-        store.collapsed
-          .find(({ rootDirectory }) => startsWith(itemPath, rootDirectory))
-          ?.collapsed.some((path) => path === itemPath + "/") ?? false // TODO: I think `?? false` is not utilized
+        store.collapsed[currentKey]?.some((path) => path === itemPath + "/") ??
+          false // TODO: I think `?? false` is not utilized
       ) || false
     );
   };
@@ -91,9 +95,7 @@ const TreeProvider: Component<{
     mapArray<Directory | FileEntry, any>(
       () => child,
       (model) => {
-        const [getCollapsed, setCollapsed] = createSignal(
-          isCollapsed(model.path)
-        );
+        const [getCollapsed, setCollapsed] = createSignal(false);
 
         const fetchDir = async (
           collapsed: boolean
@@ -131,7 +133,9 @@ const TreeProvider: Component<{
       }
     );
 
-  return <Dynamic component={props.children} mapped={mapped(directories)} />;
+  return (
+    <Dynamic component={props.children} mapped={mapped(directories.data)} />
+  );
 };
 
 export default TreeProvider;

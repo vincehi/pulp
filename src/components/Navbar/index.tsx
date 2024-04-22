@@ -1,9 +1,9 @@
-import { type Component } from "solid-js";
 import { useSearch } from "@/providers/SearchProvider";
+import { type Component } from "solid-js";
 import iconUrl from "../../assets/icon.png";
 
 const Navbar: Component = () => {
-  const [store, actions] = useSearch();
+  const [store, { setSearch }] = useSearch();
 
   return (
     <nav class="navbar top-0 z-50 w-full bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700">
@@ -18,13 +18,13 @@ const Navbar: Component = () => {
             </div>
           </div>
 
-          <div class="flex items-center">
+          <div class="flex items-center ml-2">
             <input
               type="text"
               placeholder="Search"
               class="input input-bordered input-sm w-full max-w-xs"
               onChange={(event) => {
-                actions.setSearch(event.currentTarget.value);
+                setSearch(event.currentTarget.value);
               }}
               value={store.search}
             />

@@ -1,6 +1,6 @@
 import { useSearch } from "@/providers/SearchProvider";
-import { type Component, For } from "solid-js";
 import { flexRender } from "@tanstack/solid-table";
+import { For, type Component } from "solid-js";
 
 interface Props {
   virtualRow: any;

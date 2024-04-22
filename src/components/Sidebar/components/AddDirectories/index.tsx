@@ -1,14 +1,10 @@
-import {
-  analyzeDirectory,
-  createDirectory,
-  CustomError,
-  scanDirectory,
-} from "@/services/directories";
+import directoryServices, { CustomError } from "@/services/directoryServices";
 import { message, open } from "@tauri-apps/api/dialog";
 import { isEmpty } from "lodash-es";
 import { Icon } from "solid-heroicons";
 import { plusCircle } from "solid-heroicons/outline";
 import { type Component, createEffect, createSignal } from "solid-js";
+import directoriesStore from "@/stores/directoriesStore";
 
 const AddDirectories: Component = () => {
   const [getSelectedDirectories, setSelectedDirectories] = createSignal<
@@ -30,9 +26,9 @@ const AddDirectories: Component = () => {
       void (async () => {
         for (const pathDir of getSelectedDirectories()) {
           try {
-            await createDirectory(pathDir);
-            await scanDirectory(pathDir);
-            await analyzeDirectory(pathDir);
+            await directoriesStore.createDirectory(pathDir);
+            await directoryServices.scanDirectory(pathDir);
+            await directoryServices.analyzeDirectory(pathDir);
           } catch (error) {
             if (error instanceof CustomError) {
               await message(error.message, error.options);

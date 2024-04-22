@@ -1,15 +1,17 @@
-use crate::prisma_main_client::{directory, file};
-use crate::utils::app::AppState;
-use crate::utils::extractor_music::extractor_music;
-use prisma_client_rust::and;
-use prisma_client_rust::operator::or;
-use prisma_client_rust::prisma_errors::query_engine::UniqueKeyViolation;
-use serde_json::Value;
 use std::process::Command;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
+
+use prisma_client_rust::operator::or;
+use prisma_client_rust::prisma_errors::query_engine::UniqueKeyViolation;
+use prisma_client_rust::{and, Direction};
+use serde_json::Value;
 use tauri::Manager;
 use walkdir::WalkDir;
+
+use crate::prisma_main_client::{directory, file};
+use crate::utils::app::AppState;
+use crate::utils::extractor_music::extractor_music;
 
 #[tauri::command]
 pub async fn create_directory(
@@ -92,10 +94,48 @@ pub struct Metadata {
 pub async fn get_directory_files(
   paths: Vec<String>,
   search: String,
-  cursor_path: Option<String>,
+  skip: i64,
   state: tauri::State<'_, AppState>,
-) -> Result<QueryResult, String> {
-  let result = state
+) -> Result<std::vec::Vec<file::Data>, String> {
+  let query = state
+    .prisma_client
+    .file()
+    .find_many(vec![
+      or(
+        paths
+          .into_iter()
+          .map(|path| file::path::starts_with(path))
+          .collect(),
+      ),
+      and![file::name::contains(search.to_string())],
+    ])
+    .order_by(file::path::order(Direction::Asc));
+
+  // if let Some(path) = cursor_path {
+  //   query = query.cursor(file::path::equals(path)).skip(1)
+  // }
+  // if let Some(s) = skip {
+  //   query = query.skip(s)
+  // }
+
+  return match query.skip(skip).take(20).exec().await {
+    Ok(files) => Ok(files),
+    Err(e) => Err(e.to_string()),
+  };
+}
+
+#[derive(serde::Serialize)]
+pub struct FilePosition {
+  pub total_count: u64,
+}
+
+#[tauri::command]
+pub async fn get_search_files_metadata(
+  paths: Vec<String>,
+  search: String,
+  state: tauri::State<'_, AppState>,
+) -> Result<FilePosition, prisma_client_rust::QueryError> {
+  state
     .prisma_client
     ._transaction()
     .run(|tx| async move {
@@ -109,22 +149,18 @@ pub async fn get_directory_files(
         and![file::name::contains(search.to_string())],
       ];
 
-      let mut query = tx.file().find_many(file_where.clone().to_vec());
+      let files = tx
+        .file()
+        .find_many(file_where)
+        .order_by(file::path::order(Direction::Asc))
+        .exec()
+        .await?;
 
-      if let Some(path) = cursor_path {
-        query = query.cursor(file::path::equals(path)).skip(1);
-      }
-
-      let total_count = tx.file().count(file_where.clone().to_vec()).exec().await?;
-
-      query.take(20).exec().await.map(|files| QueryResult {
-        contents: files,
-        metadata: (Metadata { total_count }),
+      Ok(FilePosition {
+        total_count: files.len() as u64,
       })
     })
     .await
-    .map_err(|e| e.to_string())?;
-  Ok(result)
 }
 
 #[tauri::command]

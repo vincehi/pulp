@@ -1,8 +1,15 @@
-import { useAnalyzeDirectoryFiles } from "@/providers/AnalyzeDirectoryFiles";
-import type { Component } from "solid-js";
+import { type Component, onMount } from "solid-js";
+import { analyzeDirectoryFilesStore } from "@/components/AnalyzeFilesModal/store";
 
 const AnalyzeFilesModal: Component = () => {
-  const [store, actions] = useAnalyzeDirectoryFiles();
+  const [store, actions] = analyzeDirectoryFilesStore;
+
+  onMount(() => {
+    void (async () => {
+      await actions.initEvent();
+    })();
+  });
+
   return (
     <>
       <input
