@@ -2,6 +2,7 @@
   "name": "pulp",
   "private": true,
   "version": "0.0.0-development",
+  "type": "module",
   "scripts": {
     "prisma-studio": "(cd src-tauri && npx prisma studio)",
     "prisma-generate-rust": "npm run cargo -- prisma generate",
@@ -9,8 +10,8 @@
     "prisma-prepare-schema-js": "node -r dotenv/config tools/prisma-prepare-schema.js src-tauri/prisma/schema.prisma dotenv_config_path=src-tauri/.env",
     "prisma-js": "npm run prisma-prepare-schema-js && npx prisma --",
     "prisma-generate-all": "npm run cargo -- prisma generate && npm run prisma-js -- generate",
-    "dev": "vite",
-    "build": "vite build",
+    "dev": "vite --config vite.config.tauri.js",
+    "build": "vite build --config vite.config.tauri.js",
     "preview": "vite preview",
     "tauri": "tauri",
     "semantic-release": "semantic-release"
@@ -19,12 +20,12 @@
     "@semantic-release/exec": "^6.0.3",
     "@semantic-release/git": "^10.0.1",
     "@tailwindcss/nesting": "^0.0.0-insiders.565cd3e",
-    "@tauri-apps/cli": "^1.3.1",
+    "@tauri-apps/cli": "^1.5.6",
     "@types/lodash-es": "^4.17.9",
     "@types/wavesurfer.js": "^6.0.6",
     "@typescript-eslint/eslint-plugin": "^5.50.0",
-    "autoprefixer": "^10.4.13",
-    "daisyui": "^3.1.5",
+    "autoprefixer": "^10.4.16",
+    "daisyui": "^3",
     "dotenv": "^16.0.3",
     "eslint": "^8.33.0",
     "eslint-config-prettier": "^8.6.0",
@@ -33,14 +34,14 @@
     "eslint-plugin-n": "^15.6.1",
     "eslint-plugin-promise": "^6.1.1",
     "eslint-plugin-solid": "~0.9.4",
-    "postcss": "^8.4.21",
+    "postcss": "^8.4.33",
     "prettier": "2.8.8",
     "prisma": "^4.9.0",
     "semantic-release": "^21.0.3",
-    "tailwindcss": "^3.3.2",
-    "typescript": "^4.9.5",
-    "vite": "^4.0.5",
-    "vite-plugin-solid": "^2.5.0"
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5",
+    "vite": "^5.0.11",
+    "vite-plugin-solid": "^2.8.0"
   },
   "dependencies": {
     "@actions/core": "^1.10.0",
@@ -48,23 +49,21 @@
     "@actions/github": "^5.1.1",
     "@prisma/client": "^4.9.0",
     "@tanstack/solid-table": "^8.10.6",
-    "@tanstack/solid-virtual": "^3.0.0-beta.6",
-    "@tauri-apps/api": "^1.3.0",
+    "@tanstack/solid-virtual": "^3.2.0",
+    "@tauri-apps/api": "^1.5.1",
     "github": "^14.0.0",
     "howler": "^2.2.3",
     "lodash-es": "^4.17.21",
     "solid-heroicons": "^3.1.1",
-    "solid-js": "^1.7.0",
+    "solid-js": "^1.8.0",
     "solidjs-use": "^2.3.0",
-    "split.js": "^1.6.5",
-    "wait-on": "^7.0.1",
     "wavesurfer.js": "^6.6.4"
-  },
-  "volta": {
-    "node": "18.12.1"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/bazalp/pulp.git"
+  },
+  "volta": {
+    "node": "20.11.0"
   }
 }

@@ -11,9 +11,10 @@ body {
     height: 100vh;
     display: grid;
     grid-template-columns: 278px 1fr;
-    grid-template-rows: 64px 1fr 230px;
+    grid-template-rows: 40px 64px 1fr 230px;
     gap: 0 0;
     grid-template-areas:
+    "tabs tabs"
     "navbar navbar"
     "sidebar files"
     "sidebar player";
@@ -44,8 +45,11 @@ body {
 }
 
 .files {
-    /*overflow: scroll;*/
     grid-area: files;
+}
+
+.tabs {
+    grid-area: tabs;
 }
 
 .navbar {

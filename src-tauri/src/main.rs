@@ -8,8 +8,12 @@ use tauri::Manager;
 use crate::utils::app::AppState;
 
 mod cmds;
+#[allow(warnings, unused)]
 mod prisma_main_client;
 mod utils;
+
+use prisma_client_rust::NewClientError;
+use prisma_main_client::PrismaClient;
 
 #[tokio::main]
 async fn main() {
@@ -28,18 +32,25 @@ async fn main() {
       tauri::async_runtime::spawn(async move {
         std::fs::create_dir_all(db_dir_path.as_path()).unwrap();
 
-        let prisma_client = prisma_main_client::new_client_with_url(
-          ("file:".to_owned() + db_file_path.to_str().unwrap()).as_str(),
-        )
-        .await
-        .unwrap();
+        let prisma_client: Result<PrismaClient, NewClientError> = PrismaClient::_builder()
+          .with_url("file:".to_owned() + db_file_path.to_str().unwrap())
+          .build()
+          .await;
 
-        // #[cfg(debug_assertions)]
-        prisma_client._db_push().await.unwrap();
-        // #[cfg(not(debug_assertions))]
-        // prisma_client._migrate_deploy().await.unwrap();
+        match prisma_client {
+          Ok(client) => {
+            // #[cfg(debug_assertions)]
+            client._db_push().await.unwrap();
+            // #[cfg(not(debug_assertions))]
+            // client._migrate_deploy().await.unwrap();
 
-        handle.manage(AppState { prisma_client })
+            handle.manage(AppState {
+              prisma_client: client,
+            });
+            Ok(())
+          }
+          Err(err) => Err(err),
+        }
       });
       Ok(())
     })
@@ -49,8 +60,10 @@ async fn main() {
       cmds::create_directory,
       cmds::delete_directory,
       cmds::scan_directory,
+      cmds::analyze_directory,
       cmds::get_directory_files,
       cmds::open_in_finder,
+      cmds::get_search_files_metadata,
     ])
     .menu(tauri::Menu::os_default(&context.package_info().name))
     .run(context)
