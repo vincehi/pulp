@@ -9,7 +9,7 @@ export default {
     themes: [
       {
         cupcake: {
-          ...daisyuiThemes["[data-theme=cupcake]"],
+          ...daisyuiThemes["[data-theme=light]"],
 
           primary: "#DC2B20",
         },

@@ -5,6 +5,7 @@
 body {
     overflow: hidden;
     height: 100vh;
+    user-select: none;
 }
 
 #app {
@@ -65,26 +66,12 @@ body {
     right: 0;
     top: 0;
     height: 100%;
-    width: 5px;
-    background: rgba(0, 0, 0, 0.5);
+    width: 1px;
+    border-left: 1px solid rgba(0, 0, 0, 0.5);
     cursor: col-resize;
     user-select: none;
     touch-action: none;
-}
-
-.resizer.isResizing {
-    background: blue;
-    opacity: 1;
-}
-
-@media (hover: hover) {
-    .resizer {
-        opacity: 0;
-    }
-
-    *:hover > .resizer {
-        opacity: 1;
-    }
+    padding: 0 2.5px;
 }
 
 .div-table {
