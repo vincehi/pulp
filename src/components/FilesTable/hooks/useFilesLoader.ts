@@ -7,6 +7,13 @@ import {
 import { MetadataFiles } from "@/services/helpers/helpers";
 import { type File as PrismaFile } from "@prisma/client";
 import { createEffect, createResource, createSignal, on } from "solid-js";
+import { DEFAULT_ITEM_PER_PAGE } from "../constants";
+
+const getCurrentSkipItems = (index: number): number => {
+  const calculatedIndex =
+    Math.floor(index / DEFAULT_ITEM_PER_PAGE) * DEFAULT_ITEM_PER_PAGE;
+  return Math.max(0, calculatedIndex);
+};
 
 function useFilesLoader(filteredStartsWith, search) {
   const [skip, setSkip] = createSignal(0);
@@ -34,7 +41,14 @@ function useFilesLoader(filteredStartsWith, search) {
     )
   );
 
-  return { files, metadataFiles, setSkip, skip };
+  return {
+    files,
+    metadataFiles,
+    handleSkipUpdate: (value) => {
+      return setSkip(getCurrentSkipItems(value || 0));
+    },
+    skip,
+  };
 }
 
 export default useFilesLoader;

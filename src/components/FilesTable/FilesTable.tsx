@@ -30,7 +30,7 @@ const FilesTable: Component = () => {
     return removeSubstrings(flatMap(store.collapsed, (item) => item));
   });
 
-  const { files, metadataFiles, setSkip } = useFilesLoader(
+  const { files, metadataFiles, handleSkipUpdate } = useFilesLoader(
     filteredStartsWith,
     () => store.search
   );
@@ -77,9 +77,9 @@ const FilesTable: Component = () => {
   });
 
   useUpdateSkip({
-    setSkip,
-    enabled: () => !files.loading && !metadataFiles.loading,
     rowVirtualizer,
+    enabled: () => !files.loading && !metadataFiles.loading,
+    handleSkipUpdate,
     isItemLoaded: (index) => !!files()?.[index]?.path,
   });
 
@@ -121,6 +121,7 @@ const FilesTable: Component = () => {
   );
 
   const handleRandomPosition = async () => {
+    setRandomPosition(null);
     const totalCount = metadataFiles()?.total_count - 1 ?? 0;
     const countRandom = random(0, totalCount);
     setRandomPosition(countRandom);
@@ -140,10 +141,13 @@ const FilesTable: Component = () => {
 
   createEffect(() => {
     const randomPos = getRandomPosition();
-    if (!files.loading && randomPos !== null) {
+    if (!files.loading && randomPos) {
       const file = files()?.[randomPos];
       if (file?.path) {
-        untrack(() => actions.setPathSelected(file.path));
+        console.log("l");
+        untrack(() => {
+          return actions.setPathSelected(file.path);
+        });
       }
     }
   });
