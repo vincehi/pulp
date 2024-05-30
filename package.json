@@ -49,7 +49,7 @@
     "@actions/github": "^5.1.1",
     "@prisma/client": "^4.9.0",
     "@tanstack/solid-table": "^8.10.6",
-    "@tanstack/solid-virtual": "^3.2.0",
+    "@tanstack/solid-virtual": "^3.5.0",
     "@tauri-apps/api": "^1.5.1",
     "github": "^14.0.0",
     "howler": "^2.2.3",

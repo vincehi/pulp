@@ -13,7 +13,6 @@ import {
   createMemo,
   createSignal,
   on,
-  untrack,
   type Component,
 } from "solid-js";
 import { onKeyStroke, useScroll, useStorage } from "solidjs-use";
@@ -67,6 +66,10 @@ const FilesTable: Component = () => {
     getRowId: (originalRow) => originalRow.path,
   });
 
+  const [getRandomPosition, setRandomPosition] = createSignal<number | null>(
+    null
+  );
+
   const rowVirtualizer = createVirtualizer({
     getScrollElement: () => bodyTableRef() ?? null,
     get count() {
@@ -74,6 +77,9 @@ const FilesTable: Component = () => {
     },
     overscan: OVERSCAN,
     estimateSize: () => 45,
+    onChange: (instance) => {
+      console.log(instance);
+    },
   });
 
   useUpdateSkip({
@@ -112,42 +118,27 @@ const FilesTable: Component = () => {
   createEffect(() => {
     setXHeader(xBody());
   });
+
   createEffect(() => {
     setXBody(xHeader());
   });
 
-  const [getRandomPosition, setRandomPosition] = createSignal<number | null>(
-    null
-  );
-
   const handleRandomPosition = async () => {
-    setRandomPosition(null);
     const totalCount = metadataFiles()?.total_count - 1 ?? 0;
     const countRandom = random(0, totalCount);
     setRandomPosition(countRandom);
   };
 
-  createEffect(
-    on(
-      getRandomPosition,
-      (value) => {
-        rowVirtualizer.scrollToIndex(value ?? 0, {
-          align: "start",
-        });
-      },
-      { defer: true }
-    )
-  );
-
   createEffect(() => {
-    const randomPos = getRandomPosition();
-    if (!files.loading && randomPos) {
-      const file = files()?.[randomPos];
-      if (file?.path) {
-        console.log("l");
-        untrack(() => {
-          return actions.setPathSelected(file.path);
-        });
+    const randomPosition = getRandomPosition();
+    if (randomPosition !== null) {
+      rowVirtualizer.scrollToIndex(randomPosition, { align: "start" });
+      if (!files.loading) {
+        const file = files()?.[randomPosition];
+        if (file?.path) {
+          actions.setPathSelected(file.path);
+          setRandomPosition(null);
+        }
       }
     }
   });
