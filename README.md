@@ -1,7 +1,7 @@
-<div align="center" style="text-align: center"><img src="https://raw.githubusercontent.com/bazalp/pulp/main/icons/icon-test.png" width="80" alt="pulp logo"/></div>
+<div align="center" style="text-align: center"><img src="https://raw.githubusercontent.com/vincehi/pulp/main/icons/icon-test.png" width="80" alt="pulp logo"/></div>
 
 <p align="center">
-  <a href="https://github.com//bazalp/pulp/releases/latest">
+  <a href="https://github.com//vincehi/pulp/releases/latest">
     🔗 Go to Download Page
   </a>
   &nbsp; | &nbsp; Give it a Star ⭐ | &nbsp;
@@ -16,15 +16,15 @@
 
 Pulp is an open source alternative
 to [ADSR Sample Manager](https://www.adsrsounds.com/product/software/adsr-sample-manager/). This application allows you
-to scan a folder, retrieve audio files, automatically detect the audio key, and organize them effectively. In addition
+to scan a folder, retrieve audio files and organize them effectively. In addition
 to being an audio sample management tool, Pulp is also an audio file explorer.
 
-<div align="center" style="text-align: center; padding: 20px"><img src="https://raw.githubusercontent.com/bazalp/pulp/main/assets/img/app-pulp.png" width="100%" alt="pulp logo"/></div>
+<div align="center" style="text-align: center; padding: 20px"><img src="https://raw.githubusercontent.com/vincehi/pulp/main/assets/img/app-pulp.png" width="100%" alt="pulp logo"/></div>
 
 ## Features
 
 - Scan a folder and retrieve audio files
-- Automatic detection of BPM, key, etc.
+- Automatic detection of BPM, key, etc (soon).
 - Easily organize and search your audio files
 - Modern and user-friendly interface
 
