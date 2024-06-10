@@ -12,7 +12,6 @@ use walkdir::WalkDir;
 use crate::prisma_main_client::{directory, file};
 use crate::utils::app::AppState;
 use crate::utils::audio_utils::get_audio_metadata;
-use crate::utils::extractor_music::extractor_music;
 
 #[tauri::command]
 pub async fn create_directory(
@@ -206,130 +205,6 @@ pub async fn open_in_finder(path: String) {
   #[cfg(target_os = "macos")]
   {
     Command::new("open").args(["-R", &path]).spawn().unwrap();
-  }
-}
-
-#[tauri::command]
-pub async fn analyze_file(
-  app_handle: &tauri::AppHandle,
-  path_dir: String,
-) -> Result<Value, std::io::Error> {
-  let mut output_path = app_handle.path_resolver().app_data_dir().unwrap();
-  output_path.push("extractor_music.temp.json");
-
-  extractor_music(path_dir, output_path.to_string_lossy().to_string()).await
-}
-
-#[derive(Clone, serde::Serialize)]
-struct Payload {
-  processing: bool,
-  file: Option<String>,
-}
-
-#[tauri::command]
-pub async fn analyze_directory(
-  app_handle: tauri::AppHandle,
-  path_dir: String,
-  state: tauri::State<'_, AppState>,
-) -> Result<(), String> {
-  directory::include!((filter: Vec<file::WhereParam>) => directory_files {
-      files(filter)
-  });
-
-  let directory = state
-    .prisma_client
-    .directory()
-    .find_unique(directory::path::equals(path_dir.clone()))
-    .include(directory_files::include(vec![file::analyzed::equals(
-      false,
-    )]))
-    .exec()
-    .await
-    .unwrap();
-
-  match directory {
-    Some(directory_data) => {
-      let files_unanalized = directory_data.files;
-
-      let mut files_unanalized_iter = files_unanalized.into_iter();
-
-      let break_loop_flag = Arc::new(AtomicBool::new(false));
-      let break_loop_flag_clone = Arc::clone(&break_loop_flag);
-
-      app_handle.once_global("stop-analyze-directory-files".to_string(), move |_| {
-        break_loop_flag_clone.store(true, Ordering::SeqCst);
-      });
-
-      while !break_loop_flag.load(Ordering::SeqCst) {
-        if let Some(file_unanalyzed) = files_unanalized_iter.next() {
-          let file_name = file_unanalyzed.name;
-
-          app_handle
-            .emit_all(
-              "analyze-directory-files",
-              Payload {
-                processing: true,
-                file: Some(file_name.clone()),
-              },
-            )
-            .unwrap();
-
-          match analyze_file(&app_handle, file_unanalyzed.path.clone()).await {
-            Ok(output) => {
-              match state
-                .prisma_client
-                .file()
-                .update(
-                  file::path::equals(file_unanalyzed.path.to_string()),
-                  vec![
-                    file::bpm::set(Some(output["rhythm"]["bpm"].as_f64().unwrap())),
-                    file::danceability::set(Some(
-                      output["rhythm"]["danceability"].as_f64().unwrap(),
-                    )),
-                    file::chords_key::set(Some(
-                      output["tonal"]["chords_key"].as_str().unwrap().to_owned(),
-                    )),
-                    file::chords_scale::set(Some(
-                      output["tonal"]["chords_scale"].as_str().unwrap().to_owned(),
-                    )),
-                    file::analyzed::set(true),
-                  ],
-                )
-                .exec()
-                .await
-              {
-                Ok(_) => {}
-                Err(error) => {
-                  return Err(format!(
-                    "Error update file '{}': {}",
-                    file_name,
-                    error.to_string()
-                  ))
-                }
-              }
-            }
-            Err(error) => return Err(format!("Erreur : {:?}", error)),
-          }
-        } else {
-          break;
-        }
-      }
-
-      app_handle
-        .emit_all(
-          "analyze-directory-files",
-          Payload {
-            processing: false,
-            file: None,
-          },
-        )
-        .unwrap();
-
-      Ok(())
-    }
-    None => {
-      return Err(format!("Error analyze file '{}'", path_dir));
-    }
   }
 }
 

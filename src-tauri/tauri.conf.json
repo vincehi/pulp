@@ -8,19 +8,10 @@
   },
   "package": {
     "productName": "pulp",
-    "version": "1.2.0"
+    "version": "1.1.1"
   },
   "tauri": {
     "allowlist": {
-      "shell": {
-        "sidecar": true,
-        "scope": [
-          {
-            "name": "binaries/streaming_extractor_music",
-            "sidecar": true
-          }
-        ]
-      },
       "all": true,
       "fs": {
         "all": true,
@@ -52,7 +43,6 @@
       "deb": {
         "depends": []
       },
-      "externalBin": ["binaries/streaming_extractor_music"],
       "icon": [
         "icons/32x32.png",
         "icons/128x128.png",
