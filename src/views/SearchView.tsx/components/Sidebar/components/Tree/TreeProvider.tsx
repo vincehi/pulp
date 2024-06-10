@@ -3,10 +3,7 @@ import {
   getSubDirectories,
   type Directory,
 } from "@/services/directoryServices";
-import {
-  default as directories,
-  default as directoriesStore,
-} from "@/stores/directoriesStore";
+import { default as directories } from "@/stores/directoriesStore";
 import { type FileEntry } from "@tauri-apps/api/fs";
 import { remove, startsWith } from "lodash-es";
 import {
@@ -34,33 +31,9 @@ const TreeProvider: FlowComponent<
 > = (props) => {
   const [store, { setCollapse }] = useSearch();
 
-  // createEffect(() => {
-  //   setCollapse((prevCollapsed) => {
-  //     return directories.data.map((dir) => {
-  //       const dirPath = dir.path;
-  //       const currentCollapsed = prevCollapsed.find(({ rootDirectory }) =>
-  //         startsWith(dirPath, rootDirectory)
-  //       );
-  //       return {
-  //         rootDirectory: dirPath,
-  //         collapsed: currentCollapsed != null ? currentCollapsed.collapsed : [],
-  //       };
-  //     });
-  //   });
-  // });
-
   const toggleCollapseItem = (itemPath: string, isCollapsed: boolean): void => {
-    const currentKey = directoriesStore.data.find((item) =>
-      startsWith(itemPath, item.path)
-    )?.path;
-
-    if (!currentKey) {
-      return;
-    }
-
     if (isCollapsed) {
       setCollapse(
-        currentKey,
         produce((items) => {
           remove(
             items,
@@ -69,7 +42,7 @@ const TreeProvider: FlowComponent<
         })
       );
     } else {
-      setCollapse(currentKey, (items) => {
+      setCollapse((items) => {
         if (items) {
           return [...items, itemPath];
         }
@@ -79,15 +52,7 @@ const TreeProvider: FlowComponent<
   };
 
   const isCollapsed = (itemPath: string): boolean => {
-    const currentKey = Object.keys(store.collapsed).find((item) =>
-      startsWith(itemPath, item)
-    );
-    if (currentKey) {
-      return Boolean(
-        store.collapsed[currentKey]?.some((path) => path === itemPath)
-      );
-    }
-    return false;
+    return store.collapsed.some((path) => path === itemPath);
   };
 
   const mapDirectory = (model: Directory | FileEntry) => {

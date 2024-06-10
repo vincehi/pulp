@@ -6,8 +6,8 @@ import { SearchProvider } from "@/providers/SearchProvider/SearchProvider";
 import directoriesStore from "@/stores/directoriesStore";
 import searchStore from "@/stores/tabsStore/searchStore";
 import tabsStore from "@/stores/tabsStore/tabsStore";
-import Sidebar from "@/views/SearchView.tsx/components/Sidebar/Sidebar";
 import { For, Show, onMount } from "solid-js";
+import Sidebar from "./components/Sidebar/Sidebar";
 
 export const SearchView = () => {
   onMount(() => {

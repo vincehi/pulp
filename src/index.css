@@ -64,10 +64,14 @@ body {
 .resizer {
     position: absolute;
     right: 0;
-    top: 0;
-    height: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    height: calc(100% - 20px);
     width: 1px;
-    border-left: 1px solid rgba(0, 0, 0, 0.5);
+    --tw-border-opacity: 1,
+    border-left-color: hsl(var(--b1) / var(--tw-bg-opacity));
+    border-left-width: 1px;
+    border-left-style: solid;
     cursor: col-resize;
     user-select: none;
     touch-action: none;

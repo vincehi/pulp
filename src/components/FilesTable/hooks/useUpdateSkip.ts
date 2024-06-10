@@ -29,9 +29,9 @@ export const useUpdateSkip: Component<UseUpdateSkipProps> = (props) => {
       );
 
       // Mettre des callback props.handleSkipUpdate
-      if (!firstItemWithOverscanLoaded && !!overscan) {
+      if (!firstItemWithOverscanLoaded) {
         props.handleSkipUpdate(firstIndex + overscan);
-      } else if (!lastItemWithOverscanLoaded && !!overscan) {
+      } else if (!lastItemWithOverscanLoaded) {
         props.handleSkipUpdate(lastIndex - overscan);
       } else if (!firstItemLoaded) {
         props.handleSkipUpdate(firstIndex);

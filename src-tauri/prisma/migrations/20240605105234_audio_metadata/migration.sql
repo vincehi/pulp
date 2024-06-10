@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE "File" ADD COLUMN "bitDepth" INTEGER;
+ALTER TABLE "File" ADD COLUMN "channels" INTEGER;
+ALTER TABLE "File" ADD COLUMN "duration" INTEGER;
+ALTER TABLE "File" ADD COLUMN "sampleRate" INTEGER;

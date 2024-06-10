@@ -47,7 +47,6 @@ function useFilesLoader(filteredStartsWith, search) {
     handleSkipUpdate: (value) => {
       return setSkip(getCurrentSkipItems(value || 0));
     },
-    skip,
   };
 }
 

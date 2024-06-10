@@ -5,7 +5,7 @@ import { cloneDeep } from "lodash-es";
 import { SetStoreFunction } from "solid-js/store";
 
 export const initialSearchStore: ITabs = {
-  collapsed: {},
+  collapsed: [],
   search: "",
   pathSelected: "",
   name: "",

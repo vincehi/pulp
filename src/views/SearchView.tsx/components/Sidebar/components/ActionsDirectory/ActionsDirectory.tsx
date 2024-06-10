@@ -1,13 +1,17 @@
+import { useSearch } from "@/providers/SearchProvider/SearchProvider";
 import directoriesStore from "@/stores/directoriesStore";
 import { type Directory } from "@prisma/client";
 import { confirm } from "@tauri-apps/api/dialog";
+import { remove, startsWith } from "lodash-es";
 import { Icon } from "solid-heroicons";
 import { trash } from "solid-heroicons/outline";
 import { type Component } from "solid-js";
+import { produce } from "solid-js/store";
 
 const ActionsDirectory: Component<{
   directory: Directory;
 }> = (props) => {
+  const [, { setAllCollapse }] = useSearch();
   const handleRemove = (
     event: MouseEvent & { currentTarget: HTMLButtonElement; target: Element }
   ): void => {
@@ -22,6 +26,18 @@ const ActionsDirectory: Component<{
         }
       );
       if (response) {
+        setAllCollapse(
+          produce((items) => {
+            remove(
+              items,
+              (path) =>
+                !(
+                  `${props.directory.path}/` !== path &&
+                  !startsWith(path, `${props.directory.path}/`)
+                )
+            );
+          })
+        );
         await directoriesStore.deleteDirectory(props.directory.path);
       }
     })();

@@ -21,6 +21,7 @@ export const SearchProvider: Component<{
         [
           props.item.data,
           {
+            setAllCollapse: props.item.setAllCollapse,
             setCollapse: props.item.setCollapse,
             setSearch: props.item.setSearch,
             setPathSelected: props.item.setPathSelected,

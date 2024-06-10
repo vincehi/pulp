@@ -6,7 +6,7 @@ import {
   getCoreRowModel,
 } from "@tanstack/solid-table";
 import { createVirtualizer } from "@tanstack/solid-virtual";
-import { flatMap, random } from "lodash-es";
+import { random } from "lodash-es";
 import {
   For,
   createEffect,
@@ -22,11 +22,13 @@ import TableRow from "./core/TableRow/TableRow";
 import useFilesLoader from "./hooks/useFilesLoader";
 import useUpdateSkip from "./hooks/useUpdateSkip";
 
+let pos = 0;
+const atTo = [0, 474, 2002];
 const FilesTable: Component = () => {
   const [store, actions] = useSearch();
 
   const filteredStartsWith = createMemo<string[]>(() => {
-    return removeSubstrings(flatMap(store.collapsed, (item) => item));
+    return removeSubstrings(store.collapsed);
   });
 
   const { files, metadataFiles, handleSkipUpdate } = useFilesLoader(
@@ -36,14 +38,25 @@ const FilesTable: Component = () => {
 
   const [bodyTableRef, setBodyTableRef] = createSignal<HTMLElement>();
 
-  const [tableState, setTableState] = useStorage("table-state", {
+  const [getColumnsSize, setColumnsSize] = useStorage("columns-size", {
     name: 350,
     bpm: 150,
-    danceability: 150,
-    chordsKey: 150,
-    chordsScale: 150,
+    simpleRate: 150,
+    bitDepth: 150,
+    channels: 150,
+    duration: 150,
     show: 100,
   });
+
+  // const [getColumnsVisible, setColumnsVisible] = useStorage("columns-visible", {
+  //   name: true,
+  //   bpm: true,
+  //   simpleRate: true,
+  //   bitDepth: true,
+  //   channels: true,
+  //   duration: true,
+  //   show: true,
+  // });
 
   const table = createSolidTable({
     get data() {
@@ -54,14 +67,14 @@ const FilesTable: Component = () => {
     columnResizeMode: "onChange",
     state: {
       get columnSizing() {
-        return tableState();
+        return getColumnsSize();
       },
     },
     initialState: {
-      columnSizing: tableState(),
+      columnSizing: getColumnsSize(),
     },
     onColumnSizingChange: (updater) => {
-      setTableState(updater);
+      setColumnsSize(updater);
     },
     getRowId: (originalRow) => originalRow.path,
   });
@@ -77,9 +90,7 @@ const FilesTable: Component = () => {
     },
     overscan: OVERSCAN,
     estimateSize: () => 45,
-    onChange: (instance) => {
-      console.log(instance);
-    },
+    isScrollingResetDelay: 0,
   });
 
   useUpdateSkip({
@@ -127,6 +138,7 @@ const FilesTable: Component = () => {
     const totalCount = metadataFiles()?.total_count - 1 ?? 0;
     const countRandom = random(0, totalCount);
     setRandomPosition(countRandom);
+    // rowVirtualizer.scrollToIndex(countRandom, { align: "start" });
   };
 
   createEffect(() => {

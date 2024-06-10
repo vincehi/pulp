@@ -11,6 +11,7 @@ use walkdir::WalkDir;
 
 use crate::prisma_main_client::{directory, file};
 use crate::utils::app::AppState;
+use crate::utils::audio_utils::get_audio_metadata;
 use crate::utils::extractor_music::extractor_music;
 
 #[tauri::command]
@@ -125,7 +126,7 @@ pub async fn get_directory_files(
 }
 
 #[derive(serde::Serialize)]
-pub struct FilePosition {
+pub struct FileMetadata {
   pub total_count: u64,
 }
 
@@ -134,7 +135,7 @@ pub async fn get_search_files_metadata(
   paths: Vec<String>,
   search: String,
   state: tauri::State<'_, AppState>,
-) -> Result<FilePosition, prisma_client_rust::QueryError> {
+) -> Result<FileMetadata, prisma_client_rust::QueryError> {
   state
     .prisma_client
     ._transaction()
@@ -156,7 +157,7 @@ pub async fn get_search_files_metadata(
         .exec()
         .await?;
 
-      Ok(FilePosition {
+      Ok(FileMetadata {
         total_count: files.len() as u64,
       })
     })
@@ -334,58 +335,126 @@ pub async fn analyze_directory(
 
 #[tauri::command]
 pub async fn scan_directory(
+  app_handle: tauri::AppHandle,
   path_dir: String,
   state: tauri::State<'_, AppState>,
 ) -> Result<(), String> {
-  let path_dir_string = path_dir.to_string();
-  let walk_dir = match WalkDir::new(&path_dir)
+  use std::path::Path;
+
+  let path = Path::new(&path_dir);
+  if !path.exists() {
+    return Err(format!("Le répertoire n'existe pas : {}", path_dir));
+  }
+
+  let files = WalkDir::new(path)
     .into_iter()
     .filter_map(|e| e.ok())
-    .collect::<Vec<_>>()
-  {
-    v if !v.is_empty() => v,
-    _ => return Err(format!("No file found in directory: {}", path_dir)),
-  };
+    .filter(|entry| {
+      entry.file_type().is_file()
+        && entry
+          .path()
+          .extension()
+          .map_or(false, |ext| ext.eq("wav") || ext.eq("mp3"))
+    })
+    .collect::<Vec<_>>();
 
-  let mut result = Vec::with_capacity(walk_dir.len());
-  for path_file in walk_dir {
-    if let Some(ext) = path_file.path().extension() {
-      if ext == "wav" || ext == "mp3" {
-        let path = path_file.path().display().to_string();
-        let last_part = match path_file.file_name().to_str() {
-          Some(s) => s.to_string(),
-          None => return Err(format!("Invalid file name: {:?}", path_file.file_name())),
-        };
+  if files.is_empty() {
+    return Err(format!(
+      "Aucun fichier trouvé dans le répertoire : {}",
+      path_dir
+    ));
+  }
 
-        match state
-          .prisma_client
-          .file()
-          .create(
-            path,
-            last_part.to_string(),
-            directory::path::equals(path_dir_string.clone()),
-            vec![],
-          )
-          .exec()
-          .await
-        {
-          Ok(file) => result.push(file),
-          Err(error) if error.is_prisma_error::<UniqueKeyViolation>() => {
-            return Err(format!("File already exists: {}", last_part))
-          }
-          Err(error) => {
-            return Err(format!(
-              "Error creating file '{}': {}",
-              last_part,
-              error.to_string()
-            ))
-          }
-        }
+  let mut result = Vec::with_capacity(files.len());
+
+  let stop_flag = Arc::new(AtomicBool::new(false));
+  let stop_flag_clone = stop_flag.clone();
+
+  app_handle.once_global("stop-analyze-directory-files".to_string(), move |_| {
+    stop_flag_clone.store(true, Ordering::SeqCst);
+  });
+
+  let mut iter = files.into_iter();
+  while let Some(path_file) = iter.next() {
+    if stop_flag.load(Ordering::SeqCst) {
+      println!("Analyse arrêtée par l'utilisateur.");
+      break;
+    }
+    let last_part = path_file
+      .file_name()
+      .to_str()
+      .ok_or_else(|| format!("Nom de fichier invalide : {:?}", path_file.file_name()))?;
+
+    app_handle
+      .emit_all(
+        "analyze-directory-files",
+        Payload {
+          processing: true,
+          file: Some(path_file.file_name().to_string_lossy().to_string()),
+        },
+      )
+      .unwrap();
+
+    let path_str = path_file.path().to_str().ok_or_else(|| {
+      format!(
+        "Impossible de convertir le chemin en chaîne de caractères : {:?}",
+        path_file.path()
+      )
+    })?;
+
+    let audio_metadata = match get_audio_metadata(path_str.to_string()).await {
+      Ok(metadata) => metadata,
+      Err(e) => return Err(e.to_string()),
+    };
+
+    let file_creation = state
+      .prisma_client
+      .file()
+      .create(
+        path_file.path().display().to_string(),
+        last_part.to_string(),
+        directory::path::equals(path_dir.clone()),
+        vec![
+          file::duration::set(Some(audio_metadata.duration_milliseconds as i32)),
+          file::channels::set(Some(audio_metadata.channels as i32)),
+          file::bitrate::set(Some(audio_metadata.bitrate as i32)),
+          file::sample_rate::set(Some(audio_metadata.sample_rate as i32)),
+        ],
+      )
+      .exec()
+      .await;
+
+    match file_creation {
+      Ok(file) => result.push(file),
+      Err(error) if error.is_prisma_error::<UniqueKeyViolation>() => {
+        return Err(format!("Le fichier existe déjà : {}", last_part))
+      }
+      Err(error) => {
+        return Err(format!(
+          "Erreur lors de la création du fichier '{}': {}",
+          last_part,
+          error.to_string()
+        ))
       }
     }
   }
+
+  app_handle
+    .emit_all(
+      "analyze-directory-files",
+      Payload {
+        processing: false,
+        file: None,
+      },
+    )
+    .unwrap();
+
   if result.is_empty() {
-    return Err(format!("No audio files found in directory: {}", path_dir));
+    return Err(format!(
+      "Aucun fichier audio trouvé dans le répertoire : {}",
+      path_dir
+    ));
   }
+
   Ok(())
 }

@@ -1,4 +1,4 @@
-export type Collapsed = Record<string, string[]>;
+export type Collapsed = string[];
 
 export interface ISearchState {
   collapsed: Collapsed;
