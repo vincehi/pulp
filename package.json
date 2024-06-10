@@ -10,8 +10,8 @@
     "prisma-prepare-schema-js": "node -r dotenv/config tools/prisma-prepare-schema.js src-tauri/prisma/schema.prisma dotenv_config_path=src-tauri/.env",
     "prisma-js": "npm run prisma-prepare-schema-js && npx prisma --",
     "prisma-generate-all": "npm run cargo -- prisma generate && npm run prisma-js -- generate",
-    "dev": "vite --config vite.config.tauri.js",
-    "build": "vite build --config vite.config.tauri.js",
+    "dev": "vite --config vite.config.js",
+    "build": "vite build --config vite.config.js",
     "preview": "vite preview",
     "tauri": "tauri",
     "semantic-release": "semantic-release"
