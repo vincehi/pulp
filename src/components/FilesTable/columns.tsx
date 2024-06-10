@@ -1,9 +1,10 @@
-import { type ColumnDef } from "@tanstack/solid-table";
 import { type File } from "@prisma/client";
+import { type ColumnDef } from "@tanstack/solid-table";
 
+import { tauri } from "@tauri-apps/api";
+import prettyMilliseconds from "pretty-ms";
 import { Icon } from "solid-heroicons";
 import { magnifyingGlass } from "solid-heroicons/solid";
-import { tauri } from "@tauri-apps/api";
 
 async function openInFinder(path: string, event: Event): Promise<void> {
   event.preventDefault();
@@ -25,31 +26,57 @@ export const filesTableColumns: Array<ColumnDef<File>> = [
     },
   },
   {
-    accessorKey: "bpm",
-    header: "BPM",
+    accessorKey: "sampleRate",
+    header: "Sample Rate",
+    cell: (info) => info.getValue() || "-",
+  },
+  {
+    accessorKey: "bitrate",
+    header: "Bitrate",
+    cell: (info) => info.getValue() || "-",
+  },
+  {
+    accessorKey: "channels",
+    header: "Channels",
+    cell: (info) => info.getValue() || "-",
+  },
+  {
+    accessorKey: "duration",
+    header: "Duration",
     cell: (info) => {
-      const value = info.getValue() as number;
-      return value === 0 ? "-" : Math.round(value);
+      const value = info.getValue();
+      if (value === null || value === undefined) {
+        return "-";
+      }
+      return prettyMilliseconds(value * 1000);
     },
   },
-  {
-    accessorKey: "danceability",
-    header: "Danceability",
-    cell: (info) => {
-      const value = info.getValue() as number;
-      return value === 0 ? "-" : value.toFixed(2);
-    },
-  },
-  {
-    accessorKey: "chordsKey",
-    header: "Chords Key",
-    cell: (info) => info.getValue(),
-  },
-  {
-    accessorKey: "chordsScale",
-    header: "Chords Scale",
-    cell: (info) => info.getValue(),
-  },
+  // {
+  //   accessorKey: "bpm",
+  //   header: "BPM",
+  //   cell: (info) => {
+  //     const value = info.getValue() as number;
+  //     return isNumber(value) ? round(value, 0) : "-";
+  //   },
+  // },
+  // {
+  //   accessorKey: "danceability",
+  //   header: "Danceability",
+  //   cell: (info) => {
+  //     const value = info.getValue() as number;
+  //     return isNumber(value) ? round(value, 2) : "-";
+  //   },
+  // },
+  // {
+  //   accessorKey: "chordsKey",
+  //   header: "Chords Key",
+  //   cell: (info) => info.getValue() ?? "-",
+  // },
+  // {
+  //   accessorKey: "chordsScale",
+  //   header: "Chords Scale",
+  //   cell: (info) => info.getValue() ?? "-",
+  // },
   {
     accessorKey: "show",
     header: "",

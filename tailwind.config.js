@@ -1,8 +1,19 @@
 /** @type {import("tailwindcss").Config} */
-module.exports = {
+import daisyui from "daisyui";
+import * as daisyuiThemes from "daisyui/src/theming/themes";
+
+export default {
   content: ["./src/**/*.{js,jsx,ts,tsx}"],
-  theme: {
-    extend: {},
+  plugins: [daisyui],
+  daisyui: {
+    themes: [
+      {
+        cupcake: {
+          ...daisyuiThemes["[data-theme=light]"],
+
+          primary: "#DC2B20",
+        },
+      },
+    ],
   },
-  plugins: [require("daisyui")],
 };

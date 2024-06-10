@@ -1,22 +1,26 @@
-use walkdir::WalkDir;
+extern crate taglib;
 
-pub async fn extract_audio_files<F>(
-  dir: &str,
-  mut callback: F,
-) -> Result<(), Box<dyn std::error::Error>>
-where
-  F: FnMut(&str),
-{
-  for entry in WalkDir::new(dir).into_iter().filter_map(|e| e.ok()) {
-    if let Some(ext) = entry.path().extension() {
-      if ext == "wav" || ext == "mp3" {
-        let path = entry.path().display().to_string();
-        callback(&path);
-      }
-    }
-  }
-  Ok(())
-}
+use std::fs::File;
+use std::io::{self, Read};
+use std::path::Path;
+
+// pub async fn extract_audio_files<F>(
+//   dir: &str,
+//   mut callback: F,
+// ) -> Result<(), Box<dyn std::error::Error>>
+// where
+//   F: FnMut(&str),
+// {
+//   for entry in WalkDir::new(dir).into_iter().filter_map(|e| e.ok()) {
+//     if let Some(ext) = entry.path().extension() {
+//       if ext == "wav" || ext == "mp3" {
+//         let path = entry.path().display().to_string();
+//         callback(&path);
+//       }
+//     }
+//   }
+//   Ok(())
+// }
 
 // #[tauri::command]
 // pub async fn analyze_file(
@@ -56,3 +60,36 @@ where
 //     .await
 //     .map_err(|err| format!("Failed to update file entry in database: {}", err))
 // }
+
+pub struct AudioProperties {
+  pub bitrate: u32,
+  pub sample_rate: u32,
+  pub channels: u32,
+  pub duration_milliseconds: u32,
+}
+
+pub async fn get_audio_metadata(path_str: String) -> Result<AudioProperties, String> {
+  let file = match taglib::File::new(&path_str) {
+    Ok(f) => f,
+    Err(e) => {
+      println!("Invalid file {} (error: {:?})", &path_str, e);
+      return Err("Invalide".to_string());
+    }
+  };
+
+  let properties = match file.audioproperties() {
+    Ok(value) => value,
+    Err(e) => {
+      return Err("Invalide".to_string());
+    }
+  };
+
+  let audio_properties = AudioProperties {
+    bitrate: properties.bitrate(),
+    sample_rate: properties.samplerate(),
+    channels: properties.channels(),
+    duration_milliseconds: properties.length(),
+  };
+
+  Ok(audio_properties)
+}

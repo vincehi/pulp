@@ -1,21 +1,14 @@
-import type { Component } from "solid-js";
-import { SearchProvider } from "./providers/SearchProvider";
-import Navbar from "./components/Navbar";
-import Sidebar from "./components/Sidebar";
-import FilesTable from "./components/FilesTable";
-import WavePlayer from "@/components/WavePlayer";
-import { WalkDirProvider } from "@/providers/WalkDir";
+import { AppProvider } from "@/providers/AppProvider";
+import { type Component } from "solid-js";
+import AnalyzeFilesModal from "./components/AnalyzeFilesModal/AnalyzeFilesModal";
+import { SearchView } from "./views/SearchView.tsx/SearchView";
 
 const App: Component = () => {
   return (
-    <WalkDirProvider>
-      <SearchProvider>
-        <Navbar />
-        <Sidebar />
-        <FilesTable />
-        <WavePlayer />
-      </SearchProvider>
-    </WalkDirProvider>
+    <AppProvider>
+      <AnalyzeFilesModal />
+      <SearchView />
+    </AppProvider>
   );
 };
 

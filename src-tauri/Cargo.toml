@@ -12,16 +12,18 @@ rust-version = "1.69"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [build-dependencies]
-tauri-build = { version = "1.3.0", features = [] }
+tauri-build = { version = "1.5.0", features = [] }
 
 [dependencies]
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
-tauri = { version = "1.3.0", features = ["api-all", "updater"] }
-prisma-client-rust = { git = "https://github.com/Brendonovich/prisma-client-rust", tag = "0.6.4", default-features = false, features = ["migrations", "sqlite"] }
+tauri = { version = "1.5.2", features = ["api-all", "updater"] }
+prisma-client-rust = { git = "https://github.com/Brendonovich/prisma-client-rust", tag = "0.6.10", default-features = false, features = ["migrations", "sqlite"] }
 tokio = { version = "1", features = ["full"] }
-thiserror = "1.0.37"
+thiserror = "1.0.50"
 walkdir = "2"
+lofty = "0.19.2"
+taglib = "*"
 
 [features]
 # by default Tauri runs in production mode

@@ -5,15 +5,17 @@
 body {
     overflow: hidden;
     height: 100vh;
+    user-select: none;
 }
 
 #app {
     height: 100vh;
     display: grid;
     grid-template-columns: 278px 1fr;
-    grid-template-rows: 64px 1fr 230px;
+    grid-template-rows: 40px 64px 1fr 230px;
     gap: 0 0;
     grid-template-areas:
+    "tabs tabs"
     "navbar navbar"
     "sidebar files"
     "sidebar player";
@@ -44,8 +46,11 @@ body {
 }
 
 .files {
-    /*overflow: scroll;*/
     grid-area: files;
+}
+
+.tabs {
+    grid-area: tabs;
 }
 
 .navbar {
@@ -59,28 +64,18 @@ body {
 .resizer {
     position: absolute;
     right: 0;
-    top: 0;
-    height: 100%;
-    width: 5px;
-    background: rgba(0, 0, 0, 0.5);
+    top: 50%;
+    transform: translateY(-50%);
+    height: calc(100% - 20px);
+    width: 1px;
+    --tw-border-opacity: 1,
+    border-left-color: hsl(var(--b1) / var(--tw-bg-opacity));
+    border-left-width: 1px;
+    border-left-style: solid;
     cursor: col-resize;
     user-select: none;
     touch-action: none;
-}
-
-.resizer.isResizing {
-    background: blue;
-    opacity: 1;
-}
-
-@media (hover: hover) {
-    .resizer {
-        opacity: 0;
-    }
-
-    *:hover > .resizer {
-        opacity: 1;
-    }
+    padding: 0 2.5px;
 }
 
 .div-table {
