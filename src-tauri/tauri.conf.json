@@ -8,7 +8,7 @@
   },
   "package": {
     "productName": "pulp",
-    "version": "1.2.0"
+    "version": "1.1.1"
   },
   "tauri": {
     "allowlist": {
@@ -24,16 +24,12 @@
       "all": true,
       "fs": {
         "all": true,
-        "scope": [
-          "**"
-        ]
+        "scope": ["**"]
       },
       "protocol": {
         "all": true,
         "asset": true,
-        "assetScope": [
-          "**"
-        ]
+        "assetScope": ["**"]
       },
       "dialog": {
         "all": true,
@@ -56,9 +52,7 @@
       "deb": {
         "depends": []
       },
-      "externalBin": [
-        "binaries/streaming_extractor_music"
-      ],
+      "externalBin": ["binaries/streaming_extractor_music"],
       "icon": [
         "icons/32x32.png",
         "icons/128x128.png",
@@ -75,9 +69,7 @@
         "providerShortName": null,
         "signingIdentity": null
       },
-      "resources": [
-        "resources/*"
-      ],
+      "resources": ["resources/*"],
       "shortDescription": "",
       "targets": "all",
       "windows": {

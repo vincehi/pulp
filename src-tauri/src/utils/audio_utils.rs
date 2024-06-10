@@ -1,9 +1,5 @@
 extern crate taglib;
 
-use std::fs::File;
-use std::io::{self, Read};
-use std::path::Path;
-
 // pub async fn extract_audio_files<F>(
 //   dir: &str,
 //   mut callback: F,
