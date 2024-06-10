@@ -21,6 +21,8 @@ jobs:
           fetch-depth: 0
       - name: Setup Node.js
         uses: actions/setup-node@v4
+        with:
+          node-version: "20"
       - name: Install dependencies
         run: npm install @actions/core
       - name: Release
@@ -86,6 +88,7 @@ jobs:
       - name: Sync node version and setup cache
         uses: actions/setup-node@v4
         with:
+          node-version: "20"
           cache: "npm" # Set this to npm, yarn or pnpm.
 
       - name: Install frontend dependencies
