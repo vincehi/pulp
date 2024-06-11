@@ -8,7 +8,7 @@
   },
   "package": {
     "productName": "pulp",
-    "version": "1.2.0"
+    "version": "1.1.1"
   },
   "tauri": {
     "allowlist": {
@@ -61,7 +61,7 @@
       },
       "resources": ["resources/*"],
       "shortDescription": "",
-      "targets": "all",
+      "targets": ["dmg", "msi", "updater"],
       "windows": {
         "certificateThumbprint": null,
         "digestAlgorithm": "sha256",
