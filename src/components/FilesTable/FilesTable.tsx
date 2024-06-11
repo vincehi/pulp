@@ -165,18 +165,6 @@ const FilesTable: Component = () => {
     )
   );
 
-  createEffect(() => {
-    console.log(table.getRowModel());
-  });
-
-  createEffect(() => {
-    console.log(rowVirtualizer.getVirtualItems());
-  });
-
-  createEffect(() => {
-    console.log(files()?.length);
-  });
-
   return (
     <div class="files div-table overflow-hidden shadow-md relative">
       <button
