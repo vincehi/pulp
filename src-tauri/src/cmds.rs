@@ -13,6 +13,12 @@ use crate::prisma_main_client::{directory, file};
 use crate::utils::app::AppState;
 use crate::utils::audio_utils::get_audio_metadata;
 
+#[derive(Clone, serde::Serialize)]
+struct Payload {
+  processing: bool,
+  file: Option<String>,
+}
+
 #[tauri::command]
 pub async fn create_directory(
   path_dir: String,
