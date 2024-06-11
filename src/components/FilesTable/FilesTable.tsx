@@ -22,8 +22,6 @@ import TableRow from "./core/TableRow/TableRow";
 import useFilesLoader from "./hooks/useFilesLoader";
 import useUpdateSkip from "./hooks/useUpdateSkip";
 
-let pos = 0;
-const atTo = [0, 474, 2002];
 const FilesTable: Component = () => {
   const [store, actions] = useSearch();
 
@@ -37,6 +35,7 @@ const FilesTable: Component = () => {
   );
 
   const [bodyTableRef, setBodyTableRef] = createSignal<HTMLElement>();
+  const [headerTableRef, setHeaderTableRef] = createSignal<HTMLElement>();
 
   const [getColumnsSize, setColumnsSize] = useStorage("columns-size", {
     name: 350,
@@ -90,14 +89,16 @@ const FilesTable: Component = () => {
     },
     overscan: OVERSCAN,
     estimateSize: () => 45,
-    isScrollingResetDelay: 0,
+    // isScrollingResetDelay: 0,
   });
 
   useUpdateSkip({
     rowVirtualizer,
     enabled: () => !files.loading && !metadataFiles.loading,
     handleSkipUpdate,
-    isItemLoaded: (index) => !!files()?.[index]?.path,
+    isItemLoaded: (index) => {
+      return !!files()?.[index]?.path;
+    },
   });
 
   onKeyStroke(
@@ -122,8 +123,6 @@ const FilesTable: Component = () => {
 
   const { setX: setXBody, x: xBody } = useScroll(bodyTableRef);
 
-  const [headerTableRef, setHeaderTableRef] = createSignal<HTMLElement>();
-
   const { setX: setXHeader, x: xHeader } = useScroll(headerTableRef);
 
   createEffect(() => {
@@ -138,7 +137,6 @@ const FilesTable: Component = () => {
     const totalCount = metadataFiles()?.total_count - 1 ?? 0;
     const countRandom = random(0, totalCount);
     setRandomPosition(countRandom);
-    // rowVirtualizer.scrollToIndex(countRandom, { align: "start" });
   };
 
   createEffect(() => {
@@ -166,6 +164,18 @@ const FilesTable: Component = () => {
       { defer: true }
     )
   );
+
+  createEffect(() => {
+    console.log(table.getRowModel());
+  });
+
+  createEffect(() => {
+    console.log(rowVirtualizer.getVirtualItems());
+  });
+
+  createEffect(() => {
+    console.log(files()?.length);
+  });
 
   return (
     <div class="files div-table overflow-hidden shadow-md relative">

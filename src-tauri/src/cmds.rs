@@ -5,7 +5,6 @@ use std::sync::Arc;
 use prisma_client_rust::operator::or;
 use prisma_client_rust::prisma_errors::query_engine::UniqueKeyViolation;
 use prisma_client_rust::{and, Direction};
-use serde_json::Value;
 use tauri::Manager;
 use walkdir::WalkDir;
 
