@@ -61,7 +61,7 @@
       },
       "resources": ["resources/*"],
       "shortDescription": "",
-      "targets": ["dmg", "msi", "updater"],
+      "targets": "all",
       "windows": {
         "certificateThumbprint": null,
         "digestAlgorithm": "sha256",
