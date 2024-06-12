@@ -80,10 +80,10 @@ checksum = "a4668cab20f66d8d020e1fbc0ebe47217433c1b6c8f2040faf858554e394ace6"
 name = "app"
 version = "1.0.4"
 dependencies = [
+ "lofty",
  "prisma-client-rust",
  "serde",
  "serde_json",
- "taglib",
  "tauri",
  "tauri-build",
  "thiserror",
@@ -949,6 +949,12 @@ dependencies = [
  "quote",
  "syn 2.0.66",
 ]
+
+[[package]]
+name = "data-encoding"
+version = "2.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e8566979429cf69b49a5c740c60791108e86440e8be149bbea4fe54d2c32d6e2"
 
 [[package]]
 name = "datamodel-renderer"
@@ -2408,6 +2414,31 @@ dependencies = [
 ]
 
 [[package]]
+name = "lofty"
+version = "0.20.0"
+source = "git+https://github.com/Serial-ATA/lofty-rs.git?branch=parse_options_read_tags#428b2bba1c7caf6e62a6f6000541aa5ffd7229e6"
+dependencies = [
+ "byteorder",
+ "data-encoding",
+ "flate2",
+ "lofty_attr",
+ "log",
+ "ogg_pager",
+ "paste",
+]
+
+[[package]]
+name = "lofty_attr"
+version = "0.11.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "28bd4b9d8a5af74808932492521cdd272019b056f75fcc70056bd2c09fceb550"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.66",
+]
+
+[[package]]
 name = "log"
 version = "0.4.21"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3035,6 +3066,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ea86265d3d3dcb6a27fc51bd29a4bf387fae9d2986b823079d4986af253eb439"
 dependencies = [
  "memchr",
+]
+
+[[package]]
+name = "ogg_pager"
+version = "0.6.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "87b0bef808533c5890ab77279538212efdbbbd9aa4ef1ccdfcfbf77a42f7e6fa"
+dependencies = [
+ "byteorder",
 ]
 
 [[package]]
@@ -5050,25 +5090,6 @@ dependencies = [
  "pkg-config",
  "toml 0.7.8",
  "version-compare 0.1.1",
-]
-
-[[package]]
-name = "taglib"
-version = "1.0.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b89f5ef37e426deffeed459ea78a564bbe85baf6a9b023a69437655b46ad2013"
-dependencies = [
- "libc",
- "taglib-sys",
-]
-
-[[package]]
-name = "taglib-sys"
-version = "1.0.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9e20ea22a603f1e8ccea16694cf8e8e3a192e5d6d6bb41d6e86dcbf3680d2a4e"
-dependencies = [
- "libc",
 ]
 
 [[package]]

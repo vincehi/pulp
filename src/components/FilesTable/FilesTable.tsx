@@ -89,7 +89,7 @@ const FilesTable: Component = () => {
     },
     overscan: OVERSCAN,
     estimateSize: () => 45,
-    // isScrollingResetDelay: 0,
+    isScrollingResetDelay: 0,
   });
 
   useUpdateSkip({

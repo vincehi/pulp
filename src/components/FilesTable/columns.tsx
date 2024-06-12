@@ -48,7 +48,7 @@ export const filesTableColumns: Array<ColumnDef<File>> = [
       if (value === null || value === undefined) {
         return "-";
       }
-      return prettyMilliseconds(value * 1000);
+      return prettyMilliseconds(value);
     },
   },
   // {

@@ -1,4 +1,8 @@
-extern crate taglib;
+use std::path::Path;
+
+use lofty::{config::ParseOptions, file::AudioFile, probe::Probe};
+
+// extern crate taglib;
 
 // pub async fn extract_audio_files<F>(
 //   dir: &str,
@@ -60,31 +64,32 @@ extern crate taglib;
 pub struct AudioProperties {
   pub bitrate: u32,
   pub sample_rate: u32,
-  pub channels: u32,
-  pub duration_milliseconds: u32,
+  pub bit_depth: u8,
+  pub channels: u8,
+  pub duration_milliseconds: u128,
 }
 
 pub async fn get_audio_metadata(path_str: String) -> Result<AudioProperties, String> {
-  let file = match taglib::File::new(&path_str) {
-    Ok(f) => f,
-    Err(e) => {
-      println!("Invalid file {} (error: {:?})", &path_str, e);
-      return Err("Invalide".to_string());
-    }
-  };
+  let path = Path::new(&path_str);
 
-  let properties = match file.audioproperties() {
-    Ok(value) => value,
-    Err(e) => {
-      return Err("Invalide".to_string());
-    }
-  };
+  if !path.is_file() {
+    panic!("ERROR: Path is not a file!");
+  }
+
+  let tagged_file = Probe::open(path)
+    .expect("ERROR: Bad path provided!")
+    .options(ParseOptions::new().read_tags(false))
+    .read()
+    .expect("ERROR: Failed to read file!");
+
+  let properties = tagged_file.properties();
 
   let audio_properties = AudioProperties {
-    bitrate: properties.bitrate(),
-    sample_rate: properties.samplerate(),
-    channels: properties.channels(),
-    duration_milliseconds: properties.length(),
+    bitrate: properties.audio_bitrate().unwrap_or(0),
+    sample_rate: properties.sample_rate().unwrap_or(0),
+    bit_depth: properties.bit_depth().unwrap_or(0),
+    channels: properties.channels().unwrap_or(0),
+    duration_milliseconds: properties.duration().as_millis(),
   };
 
   Ok(audio_properties)

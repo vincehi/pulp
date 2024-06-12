@@ -25,8 +25,9 @@ prisma-client-rust = { git = "https://github.com/Brendonovich/prisma-client-rust
 tokio = { version = "1", features = ["full"] }
 thiserror = "1.0.61"
 walkdir = "2.5"
-taglib = "1.0"
+lofty = { "git" = "https://github.com/Serial-ATA/lofty-rs.git", "branch" = "parse_options_read_tags" }
 
+# taglib = "1.0"
 [features]
 # by default Tauri runs in production mode
 # when `tauri dev` runs it is executed with `cargo run --no-default-features` if `devPath` is an URL
