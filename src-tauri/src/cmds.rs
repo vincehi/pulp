@@ -179,6 +179,8 @@ pub async fn open_in_finder(path: String) {
   }
 
   #[cfg(target_os = "linux")]
+  use std::fs::metadata;
+  use std::path::PathBuf;
   {
     if path.contains(",") {
       // see https://gitlab.freedesktop.org/dbus/dbus/-/issues/76
