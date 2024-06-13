@@ -11,7 +11,6 @@ use walkdir::WalkDir;
 use crate::prisma_main_client::{directory, file};
 use crate::utils::app::AppState;
 use crate::utils::audio_utils::get_audio_metadata;
-
 #[derive(Clone, serde::Serialize)]
 struct Payload {
   processing: bool,
@@ -179,9 +178,9 @@ pub async fn open_in_finder(path: String) {
   }
 
   #[cfg(target_os = "linux")]
-  use std::fs::metadata;
-  use std::path::PathBuf;
   {
+    use std::fs::metadata;
+    use std::path::PathBuf;
     if path.contains(",") {
       // see https://gitlab.freedesktop.org/dbus/dbus/-/issues/76
       let new_path = match metadata(&path).unwrap().is_dir() {
