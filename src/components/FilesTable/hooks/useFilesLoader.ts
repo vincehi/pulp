@@ -6,7 +6,14 @@ import {
 } from "@/services/filesServices";
 import { MetadataFiles } from "@/services/helpers/helpers";
 import { type File as PrismaFile } from "@prisma/client";
-import { createEffect, createResource, createSignal, on } from "solid-js";
+import {
+  Accessor,
+  Resource,
+  createEffect,
+  createResource,
+  createSignal,
+  on,
+} from "solid-js";
 import { DEFAULT_ITEM_PER_PAGE } from "../constants";
 
 const getCurrentSkipItems = (index: number): number => {
@@ -15,24 +22,33 @@ const getCurrentSkipItems = (index: number): number => {
   return Math.max(0, calculatedIndex);
 };
 
-function useFilesLoader(filteredStartsWith, search) {
+interface IFilesLoaderResult {
+  files: Resource<PrismaFile[]>;
+  metadataFiles: Resource<MetadataFiles>;
+  handleSkipUpdate: (value: number) => number;
+}
+
+const useFilesLoader: (
+  paths: Accessor<string[]>,
+  search: Accessor<string>
+) => IFilesLoaderResult = (paths, search) => {
   const [skip, setSkip] = createSignal(0);
 
   const [metadataFiles] = createResource<
     MetadataFiles,
     FetchMetadataFilesKeys,
     boolean
-  >(() => [filteredStartsWith(), search()], getMetadataFiles);
+  >(() => [paths(), search()], getMetadataFiles);
 
   const [files, { mutate: mutateFiles }] = createResource<
     PrismaFile[],
     FetchDirectoryFilesKeys,
     boolean
-  >(() => [filteredStartsWith(), search(), skip()], getDirectoryFiles);
+  >(() => [paths(), search(), skip()], getDirectoryFiles);
 
   createEffect(
     on(
-      [filteredStartsWith, search],
+      [paths, search],
       () => {
         mutateFiles([]);
         setSkip(0);
@@ -48,6 +64,6 @@ function useFilesLoader(filteredStartsWith, search) {
       return setSkip(getCurrentSkipItems(value || 0));
     },
   };
-}
+};
 
 export default useFilesLoader;

@@ -1,20 +1,19 @@
-import { Virtualizer } from "@tanstack/solid-virtual";
+import { VirtualItem } from "@tanstack/solid-virtual";
 import { first, last } from "lodash-es";
-import { Component, createEffect } from "solid-js";
+import { createEffect } from "solid-js";
 
 interface UseUpdateSkipProps {
   enabled: () => boolean;
-  rowVirtualizer: Virtualizer<HTMLElement, Element>;
+  getVirtualItems: () => VirtualItem[];
+  overscan: number;
   isItemLoaded: (index: number) => boolean;
   handleSkipUpdate: (skip: number) => void;
 }
 
-export const useUpdateSkip: Component<UseUpdateSkipProps> = (props) => {
+export const useUpdateSkip: (props: UseUpdateSkipProps) => void = (props) => {
   createEffect(() => {
     if (props.enabled()) {
-      const { overscan } = props.rowVirtualizer.options;
-
-      const virtualItems = props.rowVirtualizer.getVirtualItems();
+      const virtualItems = props.getVirtualItems();
 
       const firstIndex = first<any>(virtualItems)?.index;
       const lastIndex = last<any>(virtualItems)?.index;
@@ -22,17 +21,16 @@ export const useUpdateSkip: Component<UseUpdateSkipProps> = (props) => {
       const firstItemLoaded = props.isItemLoaded(firstIndex);
       const lastItemLoaded = props.isItemLoaded(lastIndex);
       const firstItemWithOverscanLoaded = props.isItemLoaded(
-        firstIndex + overscan
+        firstIndex + props.overscan
       );
       const lastItemWithOverscanLoaded = props.isItemLoaded(
-        lastIndex - overscan
+        lastIndex - props.overscan
       );
 
-      // Mettre des callback props.handleSkipUpdate
       if (!firstItemWithOverscanLoaded) {
-        props.handleSkipUpdate(firstIndex + overscan);
+        props.handleSkipUpdate(firstIndex + props.overscan);
       } else if (!lastItemWithOverscanLoaded) {
-        props.handleSkipUpdate(lastIndex - overscan);
+        props.handleSkipUpdate(lastIndex - props.overscan);
       } else if (!firstItemLoaded) {
         props.handleSkipUpdate(firstIndex);
       } else if (!lastItemLoaded) {

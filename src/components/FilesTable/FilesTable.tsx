@@ -1,6 +1,7 @@
 import { filesTableColumns } from "@/components/FilesTable/columns";
 import { useSearch } from "@/providers/SearchProvider/SearchProvider";
 import {
+  ColumnSizingState,
   createSolidTable,
   flexRender,
   getCoreRowModel,
@@ -17,7 +18,6 @@ import {
 } from "solid-js";
 import { onKeyStroke, useScroll, useStorage } from "solidjs-use";
 import { removeSubstrings } from "../../services/helpers/helpers";
-import { OVERSCAN } from "./constants";
 import TableRow from "./core/TableRow/TableRow";
 import useFilesLoader from "./hooks/useFilesLoader";
 import useUpdateSkip from "./hooks/useUpdateSkip";
@@ -25,37 +25,30 @@ import useUpdateSkip from "./hooks/useUpdateSkip";
 const FilesTable: Component = () => {
   const [store, actions] = useSearch();
 
-  const filteredStartsWith = createMemo<string[]>(() => {
+  const pathsFiltered = createMemo<string[]>(() => {
     return removeSubstrings(store.collapsed);
   });
 
   const { files, metadataFiles, handleSkipUpdate } = useFilesLoader(
-    filteredStartsWith,
+    pathsFiltered,
     () => store.search
   );
 
-  const [bodyTableRef, setBodyTableRef] = createSignal<HTMLElement>();
-  const [headerTableRef, setHeaderTableRef] = createSignal<HTMLElement>();
+  let bodyTableRef!: HTMLDivElement;
+  let headerTableRef!: HTMLDivElement;
 
-  const [getColumnsSize, setColumnsSize] = useStorage("columns-size", {
-    name: 350,
-    bpm: 150,
-    simpleRate: 150,
-    bitDepth: 150,
-    channels: 150,
-    duration: 150,
-    show: 100,
-  });
-
-  // const [getColumnsVisible, setColumnsVisible] = useStorage("columns-visible", {
-  //   name: true,
-  //   bpm: true,
-  //   simpleRate: true,
-  //   bitDepth: true,
-  //   channels: true,
-  //   duration: true,
-  //   show: true,
-  // });
+  const [getColumnsSize, setColumnsSize] = useStorage<ColumnSizingState>(
+    "columns-size",
+    {
+      name: 350,
+      bpm: 150,
+      simpleRate: 150,
+      bitDepth: 150,
+      channels: 150,
+      duration: 150,
+      show: 100,
+    }
+  );
 
   const table = createSolidTable({
     get data() {
@@ -83,17 +76,18 @@ const FilesTable: Component = () => {
   );
 
   const rowVirtualizer = createVirtualizer({
-    getScrollElement: () => bodyTableRef() ?? null,
+    getScrollElement: () => bodyTableRef,
     get count() {
       return metadataFiles()?.total_count ?? 0;
     },
-    overscan: OVERSCAN,
+    overscan: 8,
     estimateSize: () => 45,
     isScrollingResetDelay: 0,
   });
 
   useUpdateSkip({
-    rowVirtualizer,
+    getVirtualItems: rowVirtualizer.getVirtualItems,
+    overscan: rowVirtualizer.options.overscan,
     enabled: () => !files.loading && !metadataFiles.loading,
     handleSkipUpdate,
     isItemLoaded: (index) => {
@@ -108,7 +102,7 @@ const FilesTable: Component = () => {
       const targetElement = event.target as HTMLElement;
       (targetElement.nextElementSibling as HTMLElement)?.focus();
     },
-    { target: bodyTableRef }
+    { target: () => bodyTableRef }
   );
 
   onKeyStroke(
@@ -118,12 +112,12 @@ const FilesTable: Component = () => {
       const targetElement = event.target as HTMLElement;
       (targetElement.previousElementSibling as HTMLElement)?.focus();
     },
-    { target: bodyTableRef }
+    { target: () => bodyTableRef }
   );
 
-  const { setX: setXBody, x: xBody } = useScroll(bodyTableRef);
+  const { setX: setXBody, x: xBody } = useScroll(() => bodyTableRef);
 
-  const { setX: setXHeader, x: xHeader } = useScroll(headerTableRef);
+  const { setX: setXHeader, x: xHeader } = useScroll(() => headerTableRef);
 
   createEffect(() => {
     setXHeader(xBody());
@@ -134,15 +128,18 @@ const FilesTable: Component = () => {
   });
 
   const handleRandomPosition = async () => {
-    const totalCount = metadataFiles()?.total_count - 1 ?? 0;
-    const countRandom = random(0, totalCount);
+    const totalCount = metadataFiles()?.total_count ?? 0;
+    const countRandom = random(0, totalCount - 1);
     setRandomPosition(countRandom);
   };
 
   createEffect(() => {
     const randomPosition = getRandomPosition();
     if (randomPosition !== null) {
-      rowVirtualizer.scrollToIndex(randomPosition, { align: "start" });
+      rowVirtualizer.scrollToIndex(randomPosition, {
+        align: "start",
+        behavior: "auto",
+      });
       if (!files.loading) {
         const file = files()?.[randomPosition];
         if (file?.path) {
@@ -155,7 +152,7 @@ const FilesTable: Component = () => {
 
   createEffect(
     on(
-      [filteredStartsWith, () => store.search],
+      [pathsFiltered, () => store.search],
       () => {
         rowVirtualizer.scrollToOffset(0, {
           align: "start",
@@ -204,8 +201,8 @@ const FilesTable: Component = () => {
         </svg>
       </button>
       <div
-        ref={setHeaderTableRef}
-        class="thead flex hide-scrollbar overflow-auto top-0 bg-base-100 z-10"
+        ref={headerTableRef}
+        class="hidden-scrollbar thead flex hide-scrollbar overflow-auto top-0 bg-base-100 z-10"
       >
         <For each={table.getHeaderGroups()}>
           {(headerGroup) => (
@@ -238,7 +235,7 @@ const FilesTable: Component = () => {
       </div>
       <div
         class="tbody"
-        ref={setBodyTableRef}
+        ref={bodyTableRef}
         style={{ height: "calc(100% - 40px)", overflow: "scroll" }}
       >
         <div

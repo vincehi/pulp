@@ -78,6 +78,15 @@ body {
     padding: 0 2.5px;
 }
 
+.hidden-scrollbar {
+  scrollbar-width: none;  /* Firefox */
+  -ms-overflow-style: none;  /* IE et Edge */
+}
+
+.hidden-scrollbar::-webkit-scrollbar {
+    display: none;  /* WebKit */
+}
+
 .div-table {
     @apply text-left text-sm;
 
