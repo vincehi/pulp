@@ -25,8 +25,7 @@ export const getDirectoryFiles: ResourceFetcher<
     skip,
   });
 
-  const response = paddedSplice(prevValue, skip, data);
-  return response;
+  return paddedSplice(prevValue, skip, data);
 };
 
 export const getMetadataFiles: ResourceFetcher<

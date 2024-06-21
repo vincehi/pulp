@@ -1,8 +1,9 @@
 import tabsStore from "@/stores/tabsStore/tabsStore";
 import { Icon } from "solid-heroicons";
 import { plus, xMark } from "solid-heroicons/outline";
-import { Component, FlowComponent, For } from "solid-js";
+import { Component, FlowComponent, For, createSignal } from "solid-js";
 import { Dynamic } from "solid-js/web";
+import { useFocus } from "solidjs-use";
 
 interface Props {
   setActive: (tabIndex: number) => void;
@@ -13,30 +14,57 @@ interface Props {
 const Tabs: FlowComponent<Props, Component<any>> = (props) => {
   return (
     <>
-      <div class="tabs tabs-boxed tabs-xs flex items-center rounded-none">
+      <div class="tabs tabs-boxed tabs-xs flex items-center rounded-none overflow-x-auto flex-nowrap">
         <For each={tabsStore.data}>
           {(item, index) => {
+            const [target, setTarget] = createSignal<HTMLInputElement>();
+            const [, setFocused] = useFocus(target);
+            const [getRenamingMode, setRenamingMode] = createSignal(false);
+
             return (
-              <>
-                <a
-                  onClick={() => props.setActive(index())}
-                  class="tab"
-                  classList={{
-                    "tab-active": item.active,
+              <a
+                ondblclick={(event) => {
+                  event.stopPropagation();
+                  setRenamingMode(true);
+                  setFocused(true);
+                  target()?.select();
+                }}
+                onClick={() => props.setActive(index())}
+                class="tab flex-shrink-0"
+                classList={{
+                  "tab-active": item.active,
+                }}
+              >
+                <label class="input-sizer" data-value={item.name}>
+                  <input
+                    ref={setTarget}
+                    type="text"
+                    value={item.name}
+                    disabled={!getRenamingMode()}
+                    onBlur={() => setRenamingMode(false)}
+                    onInput={(event) => {
+                      tabsStore.rename(index(), event.target.value);
+                    }}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter") {
+                        event.preventDefault();
+                        setFocused(false);
+                      }
+                    }}
+                  />
+                </label>
+
+                <button
+                  class="ml-4 currentColor"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    tabsStore.activateNextOrPreviousTab(index());
+                    tabsStore.closeTab(index());
                   }}
                 >
-                  {item.name || `Tab ${index()}`}
-                  <button
-                    class="ml-4 currentColor"
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      tabsStore.closeTab(index());
-                    }}
-                  >
-                    <Icon path={xMark} class="flex-shrink-0 w-4" />
-                  </button>
-                </a>
-              </>
+                  <Icon path={xMark} class="flex-shrink-0 w-4" />
+                </button>
+              </a>
             );
           }}
         </For>
