@@ -43,7 +43,7 @@ async fn main() {
             // #[cfg(debug_assertions)]
             client._db_push().await.unwrap();
             // #[cfg(not(debug_assertions))]
-            // client._migrate_deploy().await.unwrap();
+            client._migrate_deploy().await.unwrap();
 
             handle.manage(AppState {
               prisma_client: client,
