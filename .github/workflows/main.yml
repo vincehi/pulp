@@ -35,7 +35,7 @@ jobs:
       next-release-version: ${{ steps.get-next-release.outputs.next-release-version }}
       next-release-git-tag: ${{ steps.get-next-release.outputs.next-release-git-tag }}
       next-release-notes: ${{ steps.get-next-release.outputs.next-release-notes }}
-  bump-and-push:
+  prepare-commit:
     needs: get-next-release
     if: needs.get-next-release.outputs.next-release-published == 'true'
     runs-on: ubuntu-latest
@@ -47,22 +47,20 @@ jobs:
       - name: Bump Cargo.toml version
         run: |
           sed -i 's/"version": "[0-9]\+\.[0-9]\+\.[0-9]\+"/"version": "${{ needs.get-next-release.outputs.next-release-version }}"/' src-tauri/tauri.conf.json
-      - name: Push commit changes
-        id: push-commit
+      - name: Prepare commit changes
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
           git add src-tauri/tauri.conf.json
           git commit -m "Bump version [skip ci]"
-          git push
           echo "last-commit-sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
     outputs:
-      last-commit-sha: ${{ steps.push-commit.outputs.last-commit-sha }}
+      last-commit-sha: ${{ steps.prepare-commit.outputs.last-commit-sha }}
 
   build:
     needs:
       - get-next-release
-      - bump-and-push
+      - prepare-commit
     if: needs.get-next-release.outputs.next-release-published == 'true'
     permissions:
       contents: write
@@ -83,7 +81,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          ref: ${{ needs.bump-and-push.outputs.last-commit-sha }}
+          ref: ${{ needs.prepare-commit.outputs.last-commit-sha }}
 
       - name: Rust setup
         uses: dtolnay/rust-toolchain@stable
@@ -128,3 +126,15 @@ jobs:
           releaseDraft: false
           prerelease: false
           args: ${{ matrix.args }}
+
+  push-changes:
+    needs: build
+    if: success()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.prepare-commit.outputs.last-commit-sha }}
+      - name: Push commit changes
+        run: git push
