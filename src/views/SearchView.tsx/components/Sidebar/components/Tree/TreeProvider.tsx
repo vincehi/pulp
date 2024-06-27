@@ -17,6 +17,10 @@ import {
 import { produce } from "solid-js/store";
 import { Dynamic } from "solid-js/web";
 
+import path from '@/lib/nanopath';
+
+console.log(path)
+
 export interface MappedDirectory extends Directory {
   readonly isCollapsed: boolean;
   readonly children: MappedDirectory[];
@@ -30,6 +34,10 @@ const TreeProvider: FlowComponent<
   }>
 > = (props) => {
   const [store, { setCollapse }] = useSearch();
+
+  createEffect(() => {
+    console.log(store.collapsed)
+  })
 
   const toggleCollapseItem = (itemPath: string, isCollapsed: boolean): void => {
     if (isCollapsed) {
@@ -66,8 +74,12 @@ const TreeProvider: FlowComponent<
     const [children] = createResource(getCollapsed, fetchDirectories);
 
     createEffect(() => {
-      setCollapsed(() => isCollapsed(`${model.path}/`));
+      setCollapsed(() => isCollapsed(model.path));
     });
+
+    createEffect(() => {
+      console.log(path.parse(model.path))
+    })
 
     return {
       path: model.path,
@@ -84,7 +96,7 @@ const TreeProvider: FlowComponent<
       },
 
       toggleCollapseItem: () => {
-        toggleCollapseItem(`${model.path}/`, getCollapsed());
+        toggleCollapseItem(path.normalize(model.path), getCollapsed());
       },
     };
   };
