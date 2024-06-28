@@ -4,6 +4,7 @@ import { type SetStoreFunction } from "solid-js/store";
 
 interface SearchActions {
   setCollapse: SetStoreFunction<Collapsed>;
+  setAllCollapse: SetStoreFunction<Collapsed>;
   setSearch: SetStoreFunction<string>;
   setPathSelected: SetStoreFunction<string>;
 }

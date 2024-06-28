@@ -8,8 +8,13 @@ export default {
   daisyui: {
     themes: [
       {
-        cupcake: {
+        light: {
           ...daisyuiThemes["[data-theme=light]"],
+
+          primary: "#DC2B20",
+        },
+        dark: {
+          ...daisyuiThemes["[data-theme=dark]"],
 
           primary: "#DC2B20",
         },

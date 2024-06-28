@@ -54,6 +54,7 @@
     "@tauri-apps/api": "^1.5.6 ",
     "github": "^14.0.0",
     "lodash-es": "^4.17.21",
+    "nanopath": "^2.0.1",
     "pretty-ms": "^9.0.0",
     "solid-heroicons": "^3.2.4",
     "solid-js": "^1.8.17",

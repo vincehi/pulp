@@ -1,3 +1,4 @@
+import nanopath from "@/lib/nanopath";
 import directoryServices, { CustomError } from "@/services/directoryServices";
 import directoriesStore from "@/stores/directoriesStore";
 import { message, open } from "@tauri-apps/api/dialog";
@@ -24,7 +25,8 @@ const AddDirectories: Component = () => {
   createEffect(() => {
     if (!isEmpty(getSelectedDirectories())) {
       void (async () => {
-        for (const pathDir of getSelectedDirectories()) {
+        for (const path of getSelectedDirectories()) {
+          const pathDir = nanopath.join(path, nanopath.sep);
           try {
             await directoriesStore.createDirectory(pathDir);
             await directoryServices.scanDirectory(pathDir);

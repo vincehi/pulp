@@ -32,8 +32,8 @@ const ActionsDirectory: Component<{
               items,
               (path) =>
                 !(
-                  `${props.directory.path}/` !== path &&
-                  !startsWith(path, `${props.directory.path}/`)
+                  props.directory.path !== path &&
+                  !startsWith(path, props.directory.path)
                 )
             );
           })

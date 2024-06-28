@@ -1,7 +1,7 @@
 import { type File } from "@prisma/client";
 import { type ColumnDef } from "@tanstack/solid-table";
 
-import { tauri } from "@tauri-apps/api";
+import { openInFinder as openInFinderApi } from "@/services/filesServices";
 import prettyMilliseconds from "pretty-ms";
 import { Icon } from "solid-heroicons";
 import { magnifyingGlass } from "solid-heroicons/solid";
@@ -9,7 +9,7 @@ import { magnifyingGlass } from "solid-heroicons/solid";
 async function openInFinder(path: string, event: Event): Promise<void> {
   event.preventDefault();
   event.stopPropagation();
-  await tauri.invoke("open_in_finder", { path });
+  await openInFinderApi(path);
 }
 
 export const filesTableColumns: Array<ColumnDef<File>> = [

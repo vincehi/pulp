@@ -1,3 +1,4 @@
+import nanopath from "@/lib/nanopath";
 import { useSearch } from "@/providers/SearchProvider/SearchProvider";
 import {
   getSubDirectories,
@@ -66,7 +67,7 @@ const TreeProvider: FlowComponent<
     const [children] = createResource(getCollapsed, fetchDirectories);
 
     createEffect(() => {
-      setCollapsed(() => isCollapsed(`${model.path}/`));
+      setCollapsed(() => isCollapsed(model.path));
     });
 
     return {
@@ -79,12 +80,17 @@ const TreeProvider: FlowComponent<
 
       get children() {
         return mapped(
-          children()?.filter((item) => Array.isArray(item.children))
+          children()
+            ?.filter((item) => Array.isArray(item.children))
+            .map((item) => ({
+              ...item,
+              path: nanopath.join(item.path, nanopath.sep), // added sep at the end of the path to avoid errors in startsWith
+            }))
         )();
       },
 
       toggleCollapseItem: () => {
-        toggleCollapseItem(`${model.path}/`, getCollapsed());
+        toggleCollapseItem(model.path, getCollapsed());
       },
     };
   };
