@@ -1,3 +1,4 @@
+import nanopath from "@/lib/nanopath";
 import { useSearch } from "@/providers/SearchProvider/SearchProvider";
 import {
   getSubDirectories,
@@ -17,10 +18,6 @@ import {
 import { produce } from "solid-js/store";
 import { Dynamic } from "solid-js/web";
 
-import path from '@/lib/nanopath';
-
-console.log(path)
-
 export interface MappedDirectory extends Directory {
   readonly isCollapsed: boolean;
   readonly children: MappedDirectory[];
@@ -34,10 +31,6 @@ const TreeProvider: FlowComponent<
   }>
 > = (props) => {
   const [store, { setCollapse }] = useSearch();
-
-  createEffect(() => {
-    console.log(store.collapsed)
-  })
 
   const toggleCollapseItem = (itemPath: string, isCollapsed: boolean): void => {
     if (isCollapsed) {
@@ -63,6 +56,10 @@ const TreeProvider: FlowComponent<
     return store.collapsed.some((path) => path === itemPath);
   };
 
+  createEffect(() => {
+    console.log(store.collapsed);
+  });
+
   const mapDirectory = (model: Directory | FileEntry) => {
     const [getCollapsed, setCollapsed] = createSignal(false);
 
@@ -77,10 +74,6 @@ const TreeProvider: FlowComponent<
       setCollapsed(() => isCollapsed(model.path));
     });
 
-    createEffect(() => {
-      console.log(path.parse(model.path))
-    })
-
     return {
       path: model.path,
       name: model.name,
@@ -91,12 +84,17 @@ const TreeProvider: FlowComponent<
 
       get children() {
         return mapped(
-          children()?.filter((item) => Array.isArray(item.children))
+          children()
+            ?.filter((item) => Array.isArray(item.children))
+            .map((item) => ({
+              ...item,
+              path: nanopath.join(item.path, nanopath.sep), // added sep at the end of the path to avoid errors in startsWith
+            }))
         )();
       },
 
       toggleCollapseItem: () => {
-        toggleCollapseItem(path.normalize(model.path), getCollapsed());
+        toggleCollapseItem(model.path, getCollapsed());
       },
     };
   };

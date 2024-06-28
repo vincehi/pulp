@@ -1,3 +1,4 @@
+use std::path::Path;
 use std::process::Command;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
@@ -22,20 +23,29 @@ pub async fn create_directory(
   path_dir: String,
   state: tauri::State<'_, AppState>,
 ) -> Result<directory::Data, String> {
-  let parts = path_dir.split("/").collect::<Vec<&str>>();
-  let last_part = parts[parts.len() - 1];
+  let path = Path::new(&path_dir);
+  let directory_name = path
+    .file_name()
+    .and_then(|name| name.to_str())
+    .ok_or_else(|| "Nom de répertoire invalide".to_string())?;
+
   return match state
     .prisma_client
     .directory()
-    .create(path_dir.to_string(), last_part.to_string(), true, vec![])
+    .create(
+      path.to_string_lossy().into_owned(),
+      directory_name.to_string(),
+      true,
+      vec![],
+    )
     .exec()
     .await
   {
     Ok(directory) => Ok(directory),
     Err(error) if error.is_prisma_error::<UniqueKeyViolation>() => {
-      Err(last_part.to_string() + " already exists")
+      Err(format!("{} existe déjà", directory_name))
     }
-    Err(_error) => Err("An error occurred".to_string()),
+    Err(_error) => Err("Une erreur s'est produite".to_string()),
   };
 }
 
