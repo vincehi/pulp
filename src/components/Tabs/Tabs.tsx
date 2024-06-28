@@ -22,28 +22,26 @@ const Tabs: FlowComponent<Props, Component<any>> = (props) => {
             const [getRenamingMode, setRenamingMode] = createSignal(false);
 
             return (
-              <div class="tab flex-shrink-0 flex items-center" classList={{ "tab-active": item.active }}>
+              <a
+                ondblclick={(event) => {
+                  event.stopPropagation();
+                  setRenamingMode(true);
+                  setFocused(true);
+                  target()?.select();
+                }}
+                onClick={() => props.setActive(index())}
+                class="tab flex-shrink-0"
+                classList={{
+                  "tab-active": item.active,
+                }}
+              >
                 <label class="input-sizer" data-value={item.name}>
                   <input
+                    classList={{ "pointer-events-none": !getRenamingMode() }}
                     ref={setTarget}
                     type="text"
                     value={item.name}
-                    readOnly={!getRenamingMode()}
-                    class="appearance-none bg-transparent border-none focus:outline-none cursor-pointer"
-                    classList={{
-                      "cursor-text": getRenamingMode(),
-                    }}
-                    onClick={(event) => {
-                      if (!getRenamingMode()) {
-                        props.setActive(index());
-                      }
-                    }}
-                    onDblClick={(event) => {
-                      event.preventDefault();
-                      setRenamingMode(true);
-                      setFocused(true);
-                      target()?.select();
-                    }}
+                    disabled={!getRenamingMode()}
                     onBlur={() => setRenamingMode(false)}
                     onInput={(event) => {
                       tabsStore.rename(index(), event.target.value);
@@ -51,7 +49,6 @@ const Tabs: FlowComponent<Props, Component<any>> = (props) => {
                     onKeyDown={(event) => {
                       if (event.key === "Enter") {
                         event.preventDefault();
-                        setRenamingMode(false);
                         setFocused(false);
                       }
                     }}
@@ -68,7 +65,7 @@ const Tabs: FlowComponent<Props, Component<any>> = (props) => {
                 >
                   <Icon path={xMark} class="flex-shrink-0 w-4" />
                 </button>
-              </div>
+              </a>
             );
           }}
         </For>
