@@ -7,7 +7,7 @@ const Sidebar: Component = () => {
   return (
     <aside
       id="logo-sidebar"
-      class="sidebar transition-transform bg-white border-r border-gray-200 sm:translate-x-0 dark:bg-gray-800 dark:border-gray-700"
+      class="hidden-scrollbar sidebar transition-transform bg-white border-r border-gray-200 sm:translate-x-0 dark:bg-gray-800 dark:border-gray-700"
       aria-label="Sidebar"
     >
       <ul class="sidebar-main px-3 py-4">

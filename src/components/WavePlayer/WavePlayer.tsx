@@ -78,7 +78,7 @@ const WavePlayer: Component = () => {
         <button
           class="ml-auto"
           disabled={!store.pathSelected}
-          onClick={[openInFinder, store.pathSelected]}
+          onClick={() => openInFinder(store.pathSelected)}
           title="Open in finder"
         >
           <Icon
