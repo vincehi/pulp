@@ -57,7 +57,8 @@ jobs:
           git push --dry-run
           echo "last-commit-sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
       - name: Show last commit SHA
-        run: echo "Last commit SHA: ${{ steps.current-commit.outputs.last-commit-sha }}"
+        run: |
+          echo "Last commit SHA: ${{ steps.current-commit.outputs.last-commit-sha }}"
     outputs:
       last-commit-sha: ${{ steps.current-commit.outputs.last-commit-sha }}
 
