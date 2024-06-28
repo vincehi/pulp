@@ -1,7 +1,8 @@
 import { useSearch } from "@/providers/SearchProvider/SearchProvider";
+import { openInFinder } from "@/services/filesServices";
 import { convertFileSrc } from "@tauri-apps/api/tauri";
 import { Icon } from "solid-heroicons";
-import { pause, play } from "solid-heroicons/solid";
+import { magnifyingGlass, pause, play } from "solid-heroicons/solid";
 import {
   Match,
   Switch,
@@ -58,8 +59,8 @@ const WavePlayer: Component = () => {
 
   return (
     <div class="player p-4">
-      <div>
-        <div class="flex items-center mb-4">
+      <div class="flex items-center mb-4 gap-4">
+        <div class="flex items-center">
           <input
             id="default-checkbox"
             type="checkbox"
@@ -74,6 +75,17 @@ const WavePlayer: Component = () => {
             Auto play
           </label>
         </div>
+        <button
+          class="ml-auto"
+          disabled={!store.pathSelected}
+          onClick={[openInFinder, store.pathSelected]}
+          title="Open in finder"
+        >
+          <Icon
+            path={magnifyingGlass}
+            class="flex-shrink-0 w-4 h-4 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
+          />
+        </button>
       </div>
       <div ref={container} />
 

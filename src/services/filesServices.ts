@@ -39,3 +39,7 @@ export const getMetadataFiles: ResourceFetcher<
   });
   return data;
 };
+
+export const openInFinder = (path: string): Promise<void> => {
+  return invoke("open_in_finder", { path });
+};

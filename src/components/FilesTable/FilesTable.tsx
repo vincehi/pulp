@@ -7,7 +7,6 @@ import {
   getCoreRowModel,
 } from "@tanstack/solid-table";
 import { createVirtualizer } from "@tanstack/solid-virtual";
-import { random } from "lodash-es";
 import {
   For,
   createEffect,
@@ -129,8 +128,12 @@ const FilesTable: Component = () => {
 
   const handleRandomPosition = async () => {
     const totalCount = metadataFiles()?.total_count ?? 0;
-    const countRandom = random(0, totalCount - 1);
-    setRandomPosition(countRandom);
+    if (totalCount > 0) {
+      const randomBuffer = new Uint32Array(1);
+      window.crypto.getRandomValues(randomBuffer);
+      const countRandom = randomBuffer[0] % totalCount;
+      setRandomPosition(countRandom);
+    }
   };
 
   createEffect(() => {
