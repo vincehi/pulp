@@ -35,37 +35,10 @@ jobs:
       next-release-version: ${{ steps.get-next-release.outputs.next-release-version }}
       next-release-git-tag: ${{ steps.get-next-release.outputs.next-release-git-tag }}
       next-release-notes: ${{ steps.get-next-release.outputs.next-release-notes }}
-  prepare-commit:
-    needs: get-next-release
-    if: needs.get-next-release.outputs.next-release-published == 'true'
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-      - name: Bump Cargo.toml version
-        run: |
-          sed -i 's/"version": "[0-9]\+\.[0-9]\+\.[0-9]\+"/"version": "${{ needs.get-next-release.outputs.next-release-version }}"/' src-tauri/tauri.conf.json
-      - name: Prepare commit changes
-        id: current-commit
-        run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
-          git add src-tauri/tauri.conf.json
-          git commit -m "Bump version [skip ci]"
-          git push --dry-run
-          echo "last-commit-sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
-      - name: Show last commit SHA
-        run: |
-          echo "Last commit SHA: ${{ steps.current-commit.outputs.last-commit-sha }}"
-    outputs:
-      last-commit-sha: ${{ steps.current-commit.outputs.last-commit-sha }}
 
   build:
     needs:
       - get-next-release
-      - prepare-commit
     if: needs.get-next-release.outputs.next-release-published == 'true'
     permissions:
       contents: write
@@ -85,8 +58,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          ref: ${{ needs.prepare-commit.outputs.last-commit-sha }}
 
       - name: Rust setup
         uses: dtolnay/rust-toolchain@stable
@@ -117,6 +88,16 @@ jobs:
         # If you don't have `beforeBuildCommand` configured you may want to build your frontend here too.
         run: npm install # Change this to npm, yarn or pnpm.
 
+      - name: Bump tauri.config.json version
+        run: npm run bump-tauri-version ${{ needs.get-next-release.outputs.next-release-version }}
+      - name: Push commit
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add src-tauri/tauri.conf.json
+          git commit -m "Bump version [skip ci]"
+          git push --dry-run
+
       - name: Build the app
         id: tauri-action
         uses: tauri-apps/tauri-action@v0.4.3
@@ -133,13 +114,20 @@ jobs:
           args: ${{ matrix.args }}
 
   push-changes:
-    needs: build
+    needs:
+      - get-next-release
+      - build
     if: success()
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          ref: ${{ needs.prepare-commit.outputs.last-commit-sha }}
-      - name: Push commit changes
-        run: git push
+      - name: Bump tauri.config.json version
+        run: npm run bump-tauri-version ${{ needs.get-next-release.outputs.next-release-version }}
+      - name: Push commit
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add src-tauri/tauri.conf.json
+          git commit -m "Bump version [skip ci]"
+          git push

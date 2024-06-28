@@ -14,7 +14,8 @@
     "build": "vite build --config vite.config.js",
     "preview": "vite preview",
     "tauri": "tauri",
-    "semantic-release": "semantic-release"
+    "semantic-release": "semantic-release",
+    "bump-tauri-version": "node tools/bump-tauri-version.js"
   },
   "devDependencies": {
     "@semantic-release/exec": "^6.0.3",
