@@ -56,10 +56,6 @@ const TreeProvider: FlowComponent<
     return store.collapsed.some((path) => path === itemPath);
   };
 
-  createEffect(() => {
-    console.log(store.collapsed);
-  });
-
   const mapDirectory = (model: Directory | FileEntry) => {
     const [getCollapsed, setCollapsed] = createSignal(false);
 
