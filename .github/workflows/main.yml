@@ -48,14 +48,18 @@ jobs:
         run: |
           sed -i 's/"version": "[0-9]\+\.[0-9]\+\.[0-9]\+"/"version": "${{ needs.get-next-release.outputs.next-release-version }}"/' src-tauri/tauri.conf.json
       - name: Prepare commit changes
+        id: current-commit
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
           git add src-tauri/tauri.conf.json
           git commit -m "Bump version [skip ci]"
+          git push --dry-run
           echo "last-commit-sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+      - name: Show last commit SHA
+        run: echo "Last commit SHA: ${{ steps.current-commit.outputs.last-commit-sha }}"
     outputs:
-      last-commit-sha: ${{ steps.prepare-commit.outputs.last-commit-sha }}
+      last-commit-sha: ${{ steps.current-commit.outputs.last-commit-sha }}
 
   build:
     needs:
