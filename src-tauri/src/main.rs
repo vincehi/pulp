@@ -18,11 +18,7 @@ use prisma_main_client::PrismaClient;
 
 #[tokio::main]
 async fn main() {
-  let context = tauri::generate_context!({
-    icons: {
-      "32x32": "src-tauri/icons/32x32.png"
-    }
-  });
+  let context = tauri::generate_context!();
 
   tauri::Builder::default()
     .setup(|app| {
