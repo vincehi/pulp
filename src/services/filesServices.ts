@@ -41,6 +41,5 @@ export const getMetadataFiles: ResourceFetcher<
 };
 
 export const openInFinder = (path: string): Promise<void> => {
-  console.log(path)
   return invoke("open_in_finder", { path });
 };
