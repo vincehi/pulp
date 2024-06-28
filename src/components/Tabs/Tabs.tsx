@@ -32,17 +32,23 @@ const Tabs: FlowComponent<Props, Component<any>> = (props) => {
                 onClick={() => props.setActive(index())}
                 class="tab flex-shrink-0"
                 classList={{
-                  "tab-active": item.active,
+                  "tab-active": item.active
                 }}
               >
-                <label class="input-sizer" data-value={item.name}>
+                <label classList={{
+                  "cursor-pointer": !getRenamingMode()
+                }} class="input-sizer" data-value={item.name}>
                   <input
-                    classList={{ "pointer-events-none": !getRenamingMode() }}
+                    classList={{
+                      "pointer-events-none": !getRenamingMode(),
+                    }}
                     ref={setTarget}
                     type="text"
                     value={item.name}
                     disabled={!getRenamingMode()}
-                    onBlur={() => setRenamingMode(false)}
+                    onBlur={(event) => {
+                      window.getSelection()?.removeAllRanges(); // TODO: unselectinput
+                      setRenamingMode(false)}}
                     onInput={(event) => {
                       tabsStore.rename(index(), event.target.value);
                     }}
