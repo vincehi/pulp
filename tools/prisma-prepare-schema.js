@@ -1,10 +1,9 @@
 #!/usr/bin/env node
 import fs from "fs";
 import path from "path";
-import { fileURLToPath } from "url";
-const filePath = process.argv[2];
+import { DIRNAME } from "./constants.js";
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const filePath = process.argv[2];
 
 if (!filePath) {
   console.error("No file path specified.");
@@ -25,7 +24,7 @@ if (!filePath) {
       .replace(/generator client \{.*?\}/s, newString);
 
     fs.writeFile(
-      path.resolve(__dirname, "..", `schema.prisma`),
+      path.resolve(DIRNAME, "..", `schema.prisma`),
       result,
       "utf-8",
       (error) => {
