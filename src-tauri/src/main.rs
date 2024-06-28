@@ -55,7 +55,6 @@ async fn main() {
       });
       Ok(())
     })
-    // .manage(AppState { prisma_client })
     .invoke_handler(tauri::generate_handler![
       cmds::get_all_directories,
       cmds::create_directory,
