@@ -23,7 +23,7 @@ to being an audio sample management tool, Pulp is also an audio file explorer.
 
 ## Features
 
-- Cross-plateform : Windows, MacOS (intel / Silicon), Linux
+- Cross-platform : Windows, MacOS (intel / Silicon), Linux
 - Scan a folder and retrieve audio files
 - Easily organize and search your audio files
 - Modern and user-friendly interface
