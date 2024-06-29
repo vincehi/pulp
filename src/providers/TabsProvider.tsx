@@ -1,4 +1,5 @@
-import { type Component, createContext, type JSX, useContext } from "solid-js";
+import tabsStore from "@/stores/tabsStore/tabsStore";
+import { createContext, useContext, type Component, type JSX } from "solid-js";
 
 interface TabsStore {}
 const TabsContext = createContext<TabsStore>();

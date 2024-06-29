@@ -3,6 +3,9 @@ export const getPersistentStorage = (key, defaultValue) => {
   return value ? value : defaultValue;
 };
 
-export const setPersistentStorage = (key, value) => {
+export const setPersistentStorage: (key: string, value: object) => void = (
+  key,
+  value
+) => {
   localStorage.setItem(key, JSON.stringify(value));
 };

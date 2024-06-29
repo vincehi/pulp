@@ -77,7 +77,11 @@ const FilesTable: Component = () => {
   const rowVirtualizer = createVirtualizer({
     getScrollElement: () => bodyTableRef,
     get count() {
-      return metadataFiles()?.total_count ?? 0;
+      if (!metadataFiles.loading) {
+        return metadataFiles()?.total_count || 0;
+      } else {
+        return files()?.length || 0;
+      }
     },
     overscan: 8,
     estimateSize: () => 45,

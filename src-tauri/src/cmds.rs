@@ -125,13 +125,6 @@ pub async fn get_directory_files(
     ])
     .order_by(file::path::order(Direction::Asc));
 
-  // if let Some(path) = cursor_path {
-  //   query = query.cursor(file::path::equals(path)).skip(1)
-  // }
-  // if let Some(s) = skip {
-  //   query = query.skip(s)
-  // }
-
   return match query.skip(skip).take(20).exec().await {
     Ok(files) => Ok(files),
     Err(e) => Err(e.to_string()),

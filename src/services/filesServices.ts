@@ -2,34 +2,41 @@ import { MetadataFiles, paddedSplice } from "@/services/helpers/helpers";
 import { ISearchState } from "@/stores/store";
 import { type File as PrismaFile } from "@prisma/client";
 import { invoke } from "@tauri-apps/api";
+import { isNumber } from "lodash-es";
 import { type ResourceFetcher } from "solid-js";
 
 export type ShareDirectoryFilesKeys = [
   Array<PrismaFile["path"]>,
   ISearchState["search"]
 ];
-export type FetchDirectoryFilesKeys = [...ShareDirectoryFilesKeys, number];
-
-export type FetchMetadataFilesKeys = [...ShareDirectoryFilesKeys];
 
 export const getDirectoryFiles: ResourceFetcher<
-  FetchDirectoryFilesKeys,
+  ShareDirectoryFilesKeys,
   PrismaFile[],
-  boolean
-> = async ([paths, search, skip], info) => {
-  const { value: prevValue } = info;
+  number
+> = async ([paths, search], info) => {
+  const { value: prevValue, refetching } = info;
+
+  if (isNumber(refetching)) {
+    const data = await invoke<PrismaFile[]>("get_directory_files", {
+      paths,
+      search,
+      skip: refetching,
+    });
+    return paddedSplice(prevValue, refetching, data);
+  }
 
   const data = await invoke<PrismaFile[]>("get_directory_files", {
     paths,
     search,
-    skip,
+    skip: 0,
   });
 
-  return paddedSplice(prevValue, skip, data);
+  return data;
 };
 
 export const getMetadataFiles: ResourceFetcher<
-  FetchMetadataFilesKeys,
+  ShareDirectoryFilesKeys,
   MetadataFiles,
   boolean
 > = async ([paths, search]) => {
