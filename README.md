@@ -23,10 +23,11 @@ to being an audio sample management tool, Pulp is also an audio file explorer.
 
 ## Features
 
+- Cross-plateform : Windows, MacOS (intel / Silicon), Linux
 - Scan a folder and retrieve audio files
-- Automatic detection of BPM, key, etc (soon).
 - Easily organize and search your audio files
 - Modern and user-friendly interface
+- Automatic detection of BPM, key, etc (soon)
 
 ## Technology
 
@@ -75,9 +76,9 @@ repository for more information on contribution processes.
 
 ## Acknowledgements
 
-This project utilizes Essentia, an open source audio analysis and processing library. We would like to express our
+~~This project utilizes Essentia, an open source audio analysis and processing library. We would like to express our
 gratitude to the Essentia development team for their contributions to the field of audio processing. For more
-information about Essentia, please visit their [official website](https://essentia.upf.edu/).
+information about Essentia, please visit their [official website](https://essentia.upf.edu/).~~
 
 We would like to thank all contributors for their support and help in developing Pulp. We couldn't have done it without
 you.

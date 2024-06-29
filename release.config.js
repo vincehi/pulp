@@ -11,6 +11,6 @@ export default {
     "@semantic-release/release-notes-generator",
     "@semantic-release/github",
     ["@semantic-release/npm", { npmPublish: false }],
-    "./tools/semantic-release-export-data.js",
+    "./scripts/semantic-release-export-data.js",
   ],
 };

@@ -7,7 +7,7 @@
     "prisma-studio": "(cd src-tauri && npx prisma studio)",
     "prisma-generate-rust": "npm run cargo -- prisma generate",
     "cargo": "cd src-tauri && cargo",
-    "prisma-prepare-schema-js": "node -r dotenv/config tools/prisma-prepare-schema.js src-tauri/prisma/schema.prisma dotenv_config_path=src-tauri/.env",
+    "prisma-prepare-schema-js": "node -r dotenv/config scripts/prisma-prepare-schema.js src-tauri/prisma/schema.prisma dotenv_config_path=src-tauri/.env",
     "prisma-js": "npm run prisma-prepare-schema-js && npx prisma --",
     "prisma-generate-all": "npm run cargo -- prisma generate && npm run prisma-js -- generate",
     "dev": "vite --config vite.config.js",
@@ -15,7 +15,7 @@
     "preview": "vite preview",
     "tauri": "tauri",
     "semantic-release": "semantic-release",
-    "bump-tauri-version": "node tools/bump-tauri-version.js"
+    "bump-tauri-version": "node scripts/bump-tauri-version.js"
   },
   "devDependencies": {
     "@semantic-release/exec": "^6.0.3",
