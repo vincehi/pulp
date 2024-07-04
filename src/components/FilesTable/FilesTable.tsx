@@ -83,7 +83,7 @@ const FilesTable: Component = () => {
         return files()?.length || 0;
       }
     },
-    overscan: 8,
+    overscan: 10,
     estimateSize: () => 45,
     isScrollingResetDelay: 0,
   });

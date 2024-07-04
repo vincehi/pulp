@@ -109,8 +109,11 @@ pub async fn get_directory_files(
   paths: Vec<String>,
   search: String,
   skip: i64,
+  take: i64, // Ajout du paramètre take
   state: tauri::State<'_, AppState>,
 ) -> Result<std::vec::Vec<file::Data>, String> {
+  let take = take.clamp(1, 1000);
+
   let query = state
     .prisma_client
     .file()
@@ -125,7 +128,7 @@ pub async fn get_directory_files(
     ])
     .order_by(file::path::order(Direction::Asc));
 
-  return match query.skip(skip).take(20).exec().await {
+  return match query.skip(skip).take(take).exec().await {
     Ok(files) => Ok(files),
     Err(e) => Err(e.to_string()),
   };
@@ -251,19 +254,8 @@ pub async fn scan_directory(
 
   let mut result = Vec::with_capacity(files.len());
 
-  let stop_flag = Arc::new(AtomicBool::new(false));
-  let stop_flag_clone = stop_flag.clone();
-
-  app_handle.once_global("stop-analyze-directory-files".to_string(), move |_| {
-    stop_flag_clone.store(true, Ordering::SeqCst);
-  });
-
   let mut iter = files.into_iter();
   while let Some(path_file) = iter.next() {
-    if stop_flag.load(Ordering::SeqCst) {
-      println!("Analyse arrêtée par l'utilisateur.");
-      break;
-    }
     let last_part = path_file
       .file_name()
       .to_str()

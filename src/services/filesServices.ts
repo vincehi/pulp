@@ -1,3 +1,4 @@
+import { DEFAULT_ITEM_PER_PAGE } from "@/components/FilesTable/constants";
 import { MetadataFiles, paddedSplice } from "@/services/helpers/helpers";
 import { ISearchState } from "@/stores/store";
 import { type File as PrismaFile } from "@prisma/client";
@@ -21,6 +22,7 @@ export const getDirectoryFiles: ResourceFetcher<
     const data = await invoke<PrismaFile[]>("get_directory_files", {
       paths,
       search,
+      take: DEFAULT_ITEM_PER_PAGE,
       skip: refetching,
     });
     return paddedSplice(prevValue, refetching, data);
@@ -29,6 +31,7 @@ export const getDirectoryFiles: ResourceFetcher<
   const data = await invoke<PrismaFile[]>("get_directory_files", {
     paths,
     search,
+    take: DEFAULT_ITEM_PER_PAGE,
     skip: 0,
   });
 
