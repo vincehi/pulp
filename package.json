@@ -60,7 +60,8 @@
     "solid-heroicons": "^3.2.4",
     "solid-js": "^1.8.17",
     "solidjs-use": "^2.3.0",
-    "wavesurfer.js": "^6.6.4"
+    "wavesurfer-solidjs": "^1.0.4",
+    "wavesurfer.js": "^7.8.1"
   },
   "repository": {
     "type": "git",
