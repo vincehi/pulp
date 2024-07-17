@@ -3,58 +3,43 @@ import { openInFinder } from "@/services/filesServices";
 import { convertFileSrc } from "@tauri-apps/api/tauri";
 import { Icon } from "solid-heroicons";
 import { magnifyingGlass, pause, play } from "solid-heroicons/solid";
-import {
-  Match,
-  Switch,
-  createEffect,
-  createSignal,
-  onMount,
-  type Component,
-} from "solid-js";
+import { Match, Switch, createEffect, on, type Component } from "solid-js";
 import { useLocalStorage } from "solidjs-use";
-import WaveSurfer from "wavesurfer.js";
-// import styles from "./App.module.css";
+import { createWavesurfer } from "wavesurfer-solidjs";
 
 // https://dolby.io/blog/how-to-visualize-and-annotate-your-audio-with-wavesurfer-js-and-konva-in-solidjs/
 const WavePlayer: Component = () => {
   const [store] = useSearch();
-  let container!: HTMLDivElement, // Auto-referenced by the returning JSX
-    wavesurfer: WaveSurfer;
-
-  const [isPlaying, setIsPlaying] = createSignal(false);
-
   const [autoPlay, setAutoplay] = useLocalStorage("autoPlay", false);
 
-  onMount(() => {
-    wavesurfer = WaveSurfer.create({
-      container,
-      waveColor: "violet",
-      progressColor: "purple",
-      interact: false,
-    });
-    wavesurfer.on("ready", function () {
-      console.log("One init");
-      if (autoPlay()) {
-        void wavesurfer.play();
-      }
-    });
-    wavesurfer.on("play", () => {
-      setIsPlaying(true);
-    });
-    wavesurfer.on("pause", () => setIsPlaying(false));
-    wavesurfer.on("finish", () => setIsPlaying(false));
+  let container!: HTMLDivElement;
+
+  const { wavesurfer, isPlaying, isReady } = createWavesurfer({
+    getContainer: () => container,
+    get url() {
+      return convertFileSrc(store.pathSelected);
+    },
+    waveColor: "#DC2B20",
+    progressColor: "grey",
+    height: 100,
+    backend: "WebAudio",
   });
 
-  createEffect(() => {
-    const file = store.pathSelected;
-    if (file !== "") {
-      void wavesurfer.load(convertFileSrc(file));
-    }
-  });
+  createEffect(
+    on(
+      isReady,
+      (v) => {
+        if (v && autoPlay()) {
+          void wavesurfer()?.play();
+        }
+      },
+      { defer: true }
+    )
+  );
 
   const handlePlayPause = (event: Event): void => {
     event.preventDefault();
-    void wavesurfer.playPause();
+    void wavesurfer()?.playPause();
   };
 
   return (
@@ -87,7 +72,7 @@ const WavePlayer: Component = () => {
           />
         </button>
       </div>
-      <div ref={container} />
+      <div ref={(el) => (container = el)} />
 
       <label class="swap">
         <Switch>
