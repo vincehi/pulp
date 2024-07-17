@@ -1,7 +1,7 @@
 import FilesTable from "@/components/FilesTable/FilesTable";
 import Navbar from "@/components/Navbar/Navbar";
 import Tabs from "@/components/Tabs/Tabs";
-import Waveplayer from "@/components/Waveplayer/Waveplayer";
+import WavePlayer from "@/components/WavePlayer/WavePlayer";
 import { SearchProvider } from "@/providers/SearchProvider/SearchProvider";
 import directoriesStore from "@/stores/directoriesStore";
 import searchStore from "@/stores/tabsStore/searchStore";
@@ -34,7 +34,7 @@ export const SearchView = () => {
                   <Navbar />
                   <Sidebar />
                   <FilesTable />
-                  <Waveplayer />
+                  <WavePlayer />
                 </SearchProvider>
               </Show>
             )}

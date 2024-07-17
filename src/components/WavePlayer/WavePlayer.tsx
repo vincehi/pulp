@@ -8,7 +8,7 @@ import { useLocalStorage } from "solidjs-use";
 import { createWavesurfer } from "wavesurfer-solidjs";
 
 // https://dolby.io/blog/how-to-visualize-and-annotate-your-audio-with-wavesurfer-js-and-konva-in-solidjs/
-const Waveplayer: Component = () => {
+const WavePlayer: Component = () => {
   const [store] = useSearch();
   const [autoPlay, setAutoplay] = useLocalStorage("autoPlay", false);
 
@@ -95,4 +95,4 @@ const Waveplayer: Component = () => {
     </div>
   );
 };
-export default Waveplayer;
+export default WavePlayer;
