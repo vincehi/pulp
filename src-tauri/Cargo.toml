@@ -25,7 +25,7 @@ prisma-client-rust = { git = "https://github.com/Brendonovich/prisma-client-rust
 tokio = { version = "1", features = ["full"] }
 thiserror = "1.0.61"
 walkdir = "2.5"
-lofty = { "git" = "https://github.com/Serial-ATA/lofty-rs.git", "branch" = "parse_options_read_tags" }
+lofty = { "git" = "https://github.com/Serial-ATA/lofty-rs.git", "tag" = "0.21.0" }
 
 # taglib = "1.0"
 [features]

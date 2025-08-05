@@ -43,6 +43,12 @@ example :
 `npm run cargo -- prisma generate`
 _for the CLI [prisma-client-rust](https://prisma.brendonovich.dev/getting-started/setup)_
 
+**Prerequisite**
+For Linux:
+```
+apt install cargo libsoup2.4-1 libsoup2.4-dev libjavascriptcoregtk-4.0-bin libjavascriptcoregtk-4.0-dev libjavascriptcoregtk-4.0-18 libwebkit2gtk-4.0-37 libwebkit2gtk-4.0-dev npm nodejs
+```
+
 **Starter**
 
 - Rename `src-tauri/.env.dist` to `src-tauri/.env` and replace `<user>` in `DATABASE_URL` for macOS (For the other OS
@@ -50,7 +56,7 @@ _for the CLI [prisma-client-rust](https://prisma.brendonovich.dev/getting-starte
   documentation [here](https://tauri.app/v1/api/js/path/#appdatadir)
   and [there](https://docs.rs/tauri/1.2.4/tauri/struct.PathResolver.html#method.app_data_dir) and
   adjust `<app_data_dir>`).
-- Install cargo packages : `npm run cargo -- install`
+- Install cargo packages : `npm run cargo -- install --path .`
 - Install npm packages : `npm install`
 - Push in db first migration : `npm run cargo -- prisma migrate dev --name init`.
 - Generate Prisma Rust Client : `npm run cargo -- prisma generate`.
