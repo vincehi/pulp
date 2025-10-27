@@ -14,6 +14,11 @@
 
 # Pulp - Open Source Audio Sample Manager
 
+🚧 A more optimized version 2 with additional improvements is currently in development! While it's not open source yet, you can follow the progress on my social networks: 
+- 🦋 https://pim.ms/BskyVince
+- ✖️ https://pim.ms/twitterVince
+- 👥 https://pim.ms/LinkedinVince
+
 Pulp is an open source alternative
 to [ADSR Sample Manager](https://www.adsrsounds.com/product/software/adsr-sample-manager/). This application allows you
 to scan a folder, retrieve audio files and organize them effectively. In addition
